@@ -1,2 +1,4 @@
 labyrinth
 *.exe
+*.o
+fichiers/*

@@ -11,7 +11,7 @@ tile** allocateLabyrinthTiles(int width, int height) {
         tile* line = malloc(sizeof(tile) * width);
         //Adds a '#' character to have a wall in each of the labyrinth box
         for (int j = 0; j < width; j++) {
-            line[j].c = '#';
+            line[j].c = WALL;
             line[j].unionType = 1;
         }
         tiles[i] = line;
@@ -272,10 +272,10 @@ static void prepareLabyrinth(Labyrinth labyrinth) {
     tile** tiles = labyrinth.tiles;
 
     //place the Labyrinth's entrance
-    tiles[0][1].c = 'o';
+    tiles[0][1].c = PLAYER;
 
     //place the Labyrinth's exit
-    tiles[labyrinth.height-1][labyrinth.width-2].c = 'X';
+    tiles[labyrinth.height-1][labyrinth.width-2].c = LOCKED_DOOR;
 
     for (int i = 0; i < labyrinth.height-1; i++) {
         for (int j = 0; j < labyrinth.width-1; j++) {
@@ -292,7 +292,7 @@ static void addCollectibles(Labyrinth labyrinth, char collectible, int nbCollect
         int column = rand()%(labyrinth.width-2)+1;
         int line = rand()%(labyrinth.height-2)+1;
 
-        if (labyrinth.tiles[line][column].c == ' ') {
+        if (labyrinth.tiles[line][column].c == EMPTY) {
             labyrinth.tiles[line][column].c = collectible;
         }
         else if (force) {
@@ -302,13 +302,13 @@ static void addCollectibles(Labyrinth labyrinth, char collectible, int nbCollect
 }
 
 static void setupCollectibles(Labyrinth labyrinth) {
-    addCollectibles(labyrinth, 'K', 1, 1);
+    addCollectibles(labyrinth, KEY, 1, 1);
     
     int nbTraps = labyrinth.height*labyrinth.width/20;
-    addCollectibles(labyrinth, 'T', nbTraps, 0);
+    addCollectibles(labyrinth, TRAP, nbTraps, 0);
     
     int nbCoins = labyrinth.height*labyrinth.width/10;
-    addCollectibles(labyrinth, 'C', nbCoins, 0);
+    addCollectibles(labyrinth, TREASURE, nbCoins, 0);
 }
 
 static void setBasicScore(Labyrinth labyrinth) {
@@ -325,6 +325,7 @@ void showLabyrinth(Labyrinth labyrinth) {
         }
         printf("\n");
     }
+    printf("score: %d\n", labyrinth.score);
     printf("\n");
 }
 

@@ -1,6 +1,8 @@
 #ifndef LABYRINTH_H
 #define LABYRINTH_H
 
+enum tileType { WALL='#', EMPTY=' ', TREASURE='C', TRAP='T', KEY='K', LOCKED_DOOR='L', PLAYER='o' };
+
 typedef struct {
     union {
         int nb;

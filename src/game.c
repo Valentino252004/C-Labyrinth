@@ -35,14 +35,36 @@ void movePlayer(Labyrinth labyrinth, char direction, int* playerRow, int* player
     }
     if (nextC > 0 && nextR > 0 && nextC < labyrinth.height && nextR < labyrinth.width) {
         char nextTile = labyrinth.tiles[nextR][nextC].c;
-        if (nextTile != '#') {
-
-            labyrinth.tiles[*playerRow][*playerColumn].c = ' ';
-            labyrinth.tiles[nextR][nextC].c = 'o';
-            *playerRow = nextR;
-            *playerColumn = nextC;
-            return;
+        printf("nextTile: %c\n", nextTile);
+        switch(nextTile) {
+            case WALL:
+                return;
+            case TRAP:
+                labyrinth.score-=20;
+                break;
+            case TREASURE:
+                labyrinth.score+=30;
+                break;
+            case KEY:
+                labyrinth.keyFound = 1;
+                break;
+            case LOCKED_DOOR:
+                printf("lockedDoor\n");
+                if (!labyrinth.keyFound) {
+                    printf("Vous n'avez pas récupéré la clé.\n");
+                    return;
+                }
+                break;
+            default:
+                printf("comportement innatendu.\n");
+            
         }
+        labyrinth.score-=5;
+        labyrinth.tiles[*playerRow][*playerColumn].c = EMPTY;
+        labyrinth.tiles[nextR][nextC].c = PLAYER;
+        *playerRow = nextR;
+        *playerColumn = nextC;
+        return;
     }
     printf("Direction impossible !\n");
 }
@@ -62,6 +84,7 @@ void playLabyrinth(Labyrinth labyrinth) {
         printf("D: à droite\n");
 
         scanf("%c", &dir);
+        printf("moveCall\n");
         movePlayer(labyrinth, dir, &playerRow, &playerColumn);
     }
 
