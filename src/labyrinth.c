@@ -311,9 +311,9 @@ static void setupCollectibles(Labyrinth labyrinth) {
     addCollectibles(labyrinth, TREASURE, nbCoins, 0);
 }
 
-static void setBasicScore(Labyrinth labyrinth) {
-    labyrinth.score = labyrinth.width*labyrinth.height/2*5;
-    printf("score: %d\n", labyrinth.score);
+static void setBasicScore(Labyrinth* labyrinth) {
+    labyrinth->score = labyrinth->width*labyrinth->height/2*5;
+    printf("score: %d\n", labyrinth->score);
 }
 
 void showLabyrinth(Labyrinth labyrinth) {
@@ -342,7 +342,7 @@ Labyrinth generateLabyrinth(int width, int height) {
 
     setupCollectibles(labyrinth);
 
-    setBasicScore(labyrinth);
+    setBasicScore(&labyrinth);
 
     return labyrinth;
 }

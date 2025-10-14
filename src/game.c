@@ -21,7 +21,7 @@ Labyrinth newLabyrinth() {
 }
 
 
-void movePlayer(Labyrinth labyrinth, char direction, int* playerRow, int* playerColumn) {
+void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playerColumn) {
     int nextR = *playerRow;
     int nextC = *playerColumn;
     if (direction == 'Z' || direction == 'z') {
@@ -33,24 +33,27 @@ void movePlayer(Labyrinth labyrinth, char direction, int* playerRow, int* player
     } else if (direction == 'D' || direction == 'd') {
         nextC+=1;
     }
-    if (nextC > 0 && nextR > 0 && nextC < labyrinth.height && nextR < labyrinth.width) {
-        char nextTile = labyrinth.tiles[nextR][nextC].c;
+    if (nextC > 0 && nextR > 0 && nextC < labyrinth->height && nextR < labyrinth->width) {
+        char nextTile = labyrinth->tiles[nextR][nextC].c;
         printf("nextTile: %c\n", nextTile);
         switch(nextTile) {
+            case EMPTY:
+                break;
             case WALL:
                 return;
             case TRAP:
-                labyrinth.score-=20;
+                labyrinth->score-=20;
                 break;
             case TREASURE:
-                labyrinth.score+=30;
+                labyrinth->score+=30;
                 break;
             case KEY:
-                labyrinth.keyFound = 1;
+                printf("keyFound\n");
+                labyrinth->keyFound = 1;
                 break;
             case LOCKED_DOOR:
                 printf("lockedDoor\n");
-                if (!labyrinth.keyFound) {
+                if (!labyrinth->keyFound) {
                     printf("Vous n'avez pas récupéré la clé.\n");
                     return;
                 }
@@ -59,9 +62,9 @@ void movePlayer(Labyrinth labyrinth, char direction, int* playerRow, int* player
                 printf("comportement innatendu.\n");
             
         }
-        labyrinth.score-=5;
-        labyrinth.tiles[*playerRow][*playerColumn].c = EMPTY;
-        labyrinth.tiles[nextR][nextC].c = PLAYER;
+        labyrinth->score-=5;
+        labyrinth->tiles[*playerRow][*playerColumn].c = EMPTY;
+        labyrinth->tiles[nextR][nextC].c = PLAYER;
         *playerRow = nextR;
         *playerColumn = nextC;
         return;
@@ -83,9 +86,13 @@ void playLabyrinth(Labyrinth labyrinth) {
         printf("S: en bas\n");
         printf("D: à droite\n");
 
+        //empty the buffer
+        char c;
+        while ((c = getchar()) != '\n' && c != EOF); // vide jusqu'à fin de ligne
+
         scanf("%c", &dir);
-        printf("moveCall\n");
-        movePlayer(labyrinth, dir, &playerRow, &playerColumn);
+        printf("keyfound: %d, %d\n", labyrinth.keyFound,!labyrinth.keyFound);
+        movePlayer(&labyrinth, dir, &playerRow, &playerColumn);
     }
 
     printf("\nVous avez gagné !\n\n");
