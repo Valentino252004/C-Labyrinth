@@ -21,7 +21,7 @@ Labyrinth newLabyrinth() {
 }
 
 
-void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playerColumn) {
+void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playerColumn, char* lastWalkedOn) {
     int nextR = *playerRow;
     int nextC = *playerColumn;
     if (direction == 'Z' || direction == 'z') {
@@ -35,7 +35,6 @@ void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playe
     }
     if (nextC > 0 && nextR > 0 && nextC < labyrinth->height && nextR < labyrinth->width) {
         char nextTile = labyrinth->tiles[nextR][nextC].c;
-        printf("nextTile: %c\n", nextTile);
         switch(nextTile) {
             case EMPTY:
                 break;
@@ -63,10 +62,17 @@ void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playe
             
         }
         labyrinth->score-=5;
-        labyrinth->tiles[*playerRow][*playerColumn].c = EMPTY;
+        switch(*lastWalkedOn) {
+            case TRAP:
+                labyrinth->tiles[*playerRow][*playerColumn].c = TRAP;
+                break;
+            default:
+                labyrinth->tiles[*playerRow][*playerColumn].c = EMPTY;
+        }
         labyrinth->tiles[nextR][nextC].c = PLAYER;
         *playerRow = nextR;
         *playerColumn = nextC;
+        *lastWalkedOn = nextTile;
         return;
     }
     printf("Direction impossible !\n");
@@ -76,6 +82,7 @@ void playLabyrinth(Labyrinth labyrinth) {
     int playerRow = 0;
     int playerColumn = 1;
     char dir = ' ';
+    char lastWalkedOn = EMPTY;
 
     while(playerRow != labyrinth.height-1 && playerColumn != labyrinth.width-1) {
         showLabyrinth(labyrinth);
@@ -91,8 +98,8 @@ void playLabyrinth(Labyrinth labyrinth) {
         while ((c = getchar()) != '\n' && c != EOF); // vide jusqu'à fin de ligne
 
         scanf("%c", &dir);
-        printf("keyfound: %d, %d\n", labyrinth.keyFound,!labyrinth.keyFound);
-        movePlayer(&labyrinth, dir, &playerRow, &playerColumn);
+        
+        movePlayer(&labyrinth, dir, &playerRow, &playerColumn, &lastWalkedOn);
     }
 
     printf("\nVous avez gagné !\n\n");
