@@ -4,11 +4,14 @@
 #ifndef SDL_H
 #define SDL_h
 
-enum state { MENU, PLAYING };
+typedef enum state { MENU, PLAYING } state;
 
 typedef struct {
     int running;
-    int state;
-} SDL_State;    
+    state state;
+} Scene;    
+
+void sdl_loop();
+
 
 #endif

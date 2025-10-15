@@ -1,25 +1,30 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -pedantic
 CPPFLAGS=-I$(INCLUDES)
 SRC=src/
 BIN=bin/
 INCLUDES=includes
-MAIN_OFILES=$(SRC)labyrinth.o $(SRC)menu.o $(SRC)game.o $(SRC)files.o
-SDL_LIBS=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+MAIN_OFILES=$(SRC)labyrinth.o $(SRC)mazeMenu.o $(SRC)game.o $(SRC)files.o $(SRC)sdl.o
+SDL_LIBS = $(shell pkg-config --libs sdl2 SDL2_image SDL2_ttf)
+SDL_CFLAGS = $(shell pkg-config --cflags sdl2 SDL2_image SDL2_ttf)
+CFLAGS=-Wall -Wextra -pedantic $(SDL_CFLAGS)
+LDFLAGS = $(SDL_LIBS)
 
 .PHONY: labyrinth clean distclean
 
 all: labyrinth clean
 
-labyrinth: main.o $(MAIN_OFILES)
-	$(CC) $(CFLAGS) $^ -o $(BIN)labyrinth $(SDL_LIBS)
+%/:
+	mkdir -p $@  
 
-$(SRC)%.o : $(SRC)%.c $(INCLUDES)
+labyrinth: main.o $(MAIN_OFILES) | $(BIN)
+	$(CC) $(CFLAGS) $^ -o $(BIN)labyrinth $(LDFLAGS)
+
+$(SRC)%.o : $(SRC)%.c $(INCLUDES) | $(SRC)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 
 clean:
-	del /Q *.o src\*.o
+	rm -f *.o src/*.o
 	
 distclean:
-	del /Q *.o src\*.o bin\*
+	rm -f *.o src/*.o bin/*

@@ -1,16 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <windows.h>
-#include "menu.h"
+#include "sdl.h"
 
-int main (int argc, char* argv[]) { 
-    
+int main (int argc, char* argv[]) {
     //setup a random seed;
     srand(time(NULL));
     
-    startGame();
+    sdl_loop();
 
-    return 0; 
-
+    return 0;
 }
