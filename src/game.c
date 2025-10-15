@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "labyrinth.h"
+#include "game.h"
 
 Labyrinth newLabyrinth() {
     int width = 0;
@@ -47,11 +48,9 @@ void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playe
                 labyrinth->score+=30;
                 break;
             case KEY:
-                printf("keyFound\n");
                 labyrinth->keyFound = 1;
                 break;
             case LOCKED_DOOR:
-                printf("lockedDoor\n");
                 if (!labyrinth->keyFound) {
                     printf("Vous n'avez pas récupéré la clé.\n");
                     return;
@@ -78,7 +77,7 @@ void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playe
     printf("Direction impossible !\n");
 }
 
-void playLabyrinth(Labyrinth labyrinth) {
+void play(Labyrinth labyrinth) {
     int playerRow = 0;
     int playerColumn = 1;
     char dir = ' ';

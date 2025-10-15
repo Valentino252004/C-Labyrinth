@@ -1,4 +1,5 @@
 #include "labyrinth.h"
+#include "files.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

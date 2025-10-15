@@ -1,4 +1,6 @@
 #include "labyrinth.h"
+#include "files.h"
+#include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,7 +61,7 @@ void startGame() {
         }
         
         if (strcmp(action, "play") == 0) {
-            playLabyrinth(currentLabyrinth);
+            play(currentLabyrinth);
         }
     }
 
