@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "time.h": "c",
-        "sdl_image.h": "c"
+        "sdl_image.h": "c",
+        "labyrinth.h": "c"
     }
 }
