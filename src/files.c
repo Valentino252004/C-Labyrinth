@@ -5,8 +5,7 @@
 #include <stdio.h>
 
 void saveInFile(Labyrinth labyrinth, char* labyrinthName) {
-    printf("création\n");
-    char filePath[100] = "fichiers/";
+    char filePath[100] = "mazes/";
     strcat(filePath, labyrinthName);
     strcat(filePath, ".cfg");
     FILE* file = fopen(filePath, "w+");
@@ -30,10 +29,9 @@ void saveLabyrinth(Labyrinth labyrinth) {
 }
 
 static void readFile(Labyrinth* labyrinth, char* labyrinthName) {
-    char filePath[100] = "fichiers/";
+    char filePath[100] = "mazes/";
     strcat(filePath, labyrinthName);
     strcat(filePath, ".cfg");
-
     FILE* file = fopen(filePath, "r+");
     fseek(file, 0, SEEK_SET);
     if (!file) {
@@ -47,7 +45,6 @@ static void readFile(Labyrinth* labyrinth, char* labyrinthName) {
     fread(&keyFound, sizeof(int), 1, file);
     
     if (labyrinth != NULL) {
-        printf("%d %d\n", labyrinth->height, labyrinth->width);
         freeLabyrinth(labyrinth);
     }
     *labyrinth = allocateLabyrinth(width, height);

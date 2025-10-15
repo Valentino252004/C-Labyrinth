@@ -3,15 +3,19 @@ CPPFLAGS=-I$(INCLUDES)
 SRC=src/
 BIN=bin/
 INCLUDES=includes
-MAIN_OFILES=$(SRC)labyrinth.o $(SRC)mazeMenu.o $(SRC)game.o $(SRC)files.o $(SRC)sdl.o
+MAIN_OFILES=$(SRC)labyrinth.o $(SRC)mazeMenu.o $(SRC)game.o $(SRC)files.o $(SRC)sdl.o $(SRC)sdl_utils.o
 SDL_LIBS = $(shell pkg-config --libs sdl2 SDL2_image SDL2_ttf)
 SDL_CFLAGS = $(shell pkg-config --cflags sdl2 SDL2_image SDL2_ttf)
-CFLAGS=-Wall -Wextra -pedantic $(SDL_CFLAGS)
+CFLAGS=-Wall -Wextra -pedantic $(SDL_CFLAGS) -g
 LDFLAGS = $(SDL_LIBS)
+MAZESAVINGDIR=mazes/
 
 .PHONY: labyrinth clean distclean
 
-all: labyrinth clean
+all: labyrinth mazeSavingDir clean
+
+mazeSavingDir:
+	mkdir -p $(MAZESAVINGDIR)
 
 %/:
 	mkdir -p $@  

@@ -313,7 +313,6 @@ static void setupCollectibles(Labyrinth labyrinth) {
 
 static void setBasicScore(Labyrinth* labyrinth) {
     labyrinth->score = labyrinth->width*labyrinth->height/2*5;
-    printf("score: %d\n", labyrinth->score);
 }
 
 void showLabyrinth(Labyrinth labyrinth) {
@@ -341,6 +340,7 @@ Labyrinth generateLabyrinth(int width, int height) {
     prepareLabyrinth(labyrinth);
 
     setupCollectibles(labyrinth);
+    labyrinth.keyFound = 0;
 
     setBasicScore(&labyrinth);
 
