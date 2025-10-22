@@ -95,18 +95,22 @@ void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
     int nextC = labyrinth->playerColumn;
     switch(keyPressed) {
         case SDLK_UP:
+        case SDLK_z:
             nextR -= 1;
             printf("Flèche haut\n");
             break;
         case SDLK_DOWN:
+        case SDLK_s:
             nextR += 1;
             printf("Flèche bas\n");
             break;
         case SDLK_LEFT:
+        case SDLK_q:
             nextC -= 1;
             printf("Flèche gauche\n");
             break;
         case SDLK_RIGHT:
+        case SDLK_d:
             nextC += 1;
             printf("Flèche droite\n");
             break;
