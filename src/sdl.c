@@ -16,13 +16,13 @@
 
 void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
     int squareSize = 20;
-    
+
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     for (int row = 0; row < labyrinth.height; row++) {
         for (int col = 0; col < labyrinth.width; col++) {
-            tile t = labyrinth.tiles[row][col];
+            tile tile = labyrinth.tiles[row][col];
             
             SDL_Rect rectangle;
             rectangle.x = col * squareSize;
@@ -30,28 +30,35 @@ void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
             rectangle.w = squareSize;
             rectangle.h = squareSize;
 
-            switch(t.c) {
-                case WALL:
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                    break;
-                case EMPTY:
-                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-                    break;
-                case TREASURE:
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                    break;
-                case TRAP:
-                    SDL_SetRenderDrawColor(renderer, 224, 224, 224, 255);
-                    break;
-                case KEY:
-                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                    break;
-                case LOCKED_DOOR:
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                    break;
-                case PLAYER:
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-                    break;
+            if (row == labyrinth.playerRow && col == labyrinth.playerColumn) {
+                SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+            } else {
+                switch(tile.c) {
+                    case WALL:
+                        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        break;
+                    case EMPTY:
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                        break;
+                    case TREASURE:
+                        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+                        break;
+                    case TRAP:
+                        SDL_SetRenderDrawColor(renderer, 224, 224, 224, 255);
+                        break;
+                    case KEY:
+                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                        break;
+                    case LOCKED_DOOR:
+                        if (labyrinth.keyFound) {
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                            break;
+                        }
+                        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                        break;
+                    default:
+                        break;
+                }
             }
             SDL_RenderFillRect(renderer, &rectangle);
         }
@@ -82,8 +89,51 @@ void display_scene(SDL_Renderer* renderer, Scene scene, TTF_Font* font, Labyrint
 }
 
 
-void keyHandler(Scene scene, SDL_Event* event) {
+void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
+    //TODO Player Row and Column in labyrinth
+    int nextR = labyrinth->playerRow;
+    int nextC = labyrinth->playerColumn;
+    switch(keyPressed) {
+        case SDLK_UP:
+            nextR -= 1;
+            printf("Flèche haut\n");
+            break;
+        case SDLK_DOWN:
+            nextR += 1;
+            printf("Flèche bas\n");
+            break;
+        case SDLK_LEFT:
+            nextC -= 1;
+            printf("Flèche gauche\n");
+            break;
+        case SDLK_RIGHT:
+            nextC += 1;
+            printf("Flèche droite\n");
+            break;
+        case SDLK_ESCAPE:
+            printf("Escape pressé\n");
+            break;
+        default: 
+            return;
+    }
 
+    if (nextR < 0 || nextR >= labyrinth->height || nextC < 0 || nextC >= labyrinth->width) {
+        return;
+    }
+
+    movePlayer(labyrinth, nextR, nextC);
+
+    
+
+}
+
+void keyHandler(Scene scene, SDL_Event* event, Labyrinth* labyrinth) {
+    SDL_Keycode keyPressed = event->key.keysym.sym;
+    switch(scene.state) {
+        case PLAYING:
+            keyHandlerPlaying(keyPressed, labyrinth);
+            break;
+    }
 }
 
 
@@ -100,10 +150,12 @@ void sdl_loop() {
     scene.state = PLAYING;
 
     //Labyrinth lab = newLabyrinth();
-    //saveLabyrinth(lab);
+    //  saveLabyrinth(lab);
 
     Labyrinth currentLabyrinth;
     currentLabyrinth.tiles = NULL;
+    currentLabyrinth.height = 0;
+    currentLabyrinth.width = 0;
     currentLabyrinth.height = 0;
     currentLabyrinth.width = 0;
     currentLabyrinth.score = 0;
@@ -118,7 +170,7 @@ void sdl_loop() {
                     scene.running = 0;
                     break;
                 case SDL_KEYDOWN:
-                    keyHandler(scene, &event);
+                    keyHandler(scene, &event, &currentLabyrinth);
             }
         }
         display_scene(renderer, scene, font, currentLabyrinth);

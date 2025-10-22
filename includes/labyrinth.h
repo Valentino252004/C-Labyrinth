@@ -18,6 +18,8 @@ typedef struct {
     int width;
     int keyFound;
     int score;
+    int playerRow;
+    int playerColumn;
 } Labyrinth;
 
 

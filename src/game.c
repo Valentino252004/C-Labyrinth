@@ -22,6 +22,39 @@ Labyrinth newLabyrinth() {
 }
 
 
+void movePlayer(Labyrinth* labyrinth, int nextR, int nextC) {
+
+    switch(labyrinth->tiles[nextR][nextC].c) {
+        case WALL:
+            return;
+        case EMPTY:
+            labyrinth->score-=5;
+            break;
+        case TRAP:
+            labyrinth->score-=25;
+            break;
+        case TREASURE:
+            labyrinth->score +=50;
+            labyrinth->tiles[nextR][nextC].c = EMPTY;
+            break;
+        case KEY:
+            labyrinth->score +=100;
+            labyrinth->keyFound = 1;
+            labyrinth->tiles[nextR][nextC].c = EMPTY;
+            break;
+        case LOCKED_DOOR:
+            if (!labyrinth->keyFound) {
+                return;
+            }
+            break;
+        default:
+            printf("movePlayer - Undefined Behavior");
+    }
+    labyrinth->playerColumn = nextC;
+    labyrinth->playerRow = nextR;
+}
+
+/*
 void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playerColumn, char* lastWalkedOn) {
     int nextR = *playerRow;
     int nextC = *playerColumn;
@@ -75,7 +108,8 @@ void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playe
         return;
     }
     printf("Direction impossible !\n");
-}
+}*/
+
 
 void play(Labyrinth labyrinth) {
     int playerRow = 0;
@@ -98,7 +132,7 @@ void play(Labyrinth labyrinth) {
 
         scanf("%c", &dir);
         
-        movePlayer(&labyrinth, dir, &playerRow, &playerColumn, &lastWalkedOn);
+        //movePlayer(&labyrinth, dir, &playerRow, &playerColumn, &lastWalkedOn);
     }
 
     printf("\nVous avez gagné !\n\n");

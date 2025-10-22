@@ -14,6 +14,8 @@ void saveInFile(Labyrinth labyrinth, char* labyrinthName) {
     fwrite(&labyrinth.width, sizeof(int), 1, file);
     fwrite(&labyrinth.score, sizeof(int), 1, file);
     fwrite(&labyrinth.keyFound, sizeof(int), 1, file);
+    fwrite(&labyrinth.playerRow, sizeof(int), 1, file);
+    fwrite(&labyrinth.playerColumn, sizeof(int), 1, file);
     
     for (int i = 0; i < labyrinth.height; i++) {
         fwrite(labyrinth.tiles[i], sizeof(tile), labyrinth.width, file);
@@ -38,11 +40,13 @@ static void readFile(Labyrinth* labyrinth, char* labyrinthName) {
         perror("Erreur ouverture fichier en lecture");
     }
 
-    int height, width, score, keyFound;
+    int height, width, score, keyFound, playerRow, playerColumn;
     fread(&height, sizeof(int), 1, file);
     fread(&width, sizeof(int), 1, file);
     fread(&score, sizeof(int), 1, file);
     fread(&keyFound, sizeof(int), 1, file);
+    fread(&playerRow, sizeof(int), 1, file);
+    fread(&playerColumn, sizeof(int), 1, file);
     
     if (labyrinth != NULL) {
         freeLabyrinth(labyrinth);
@@ -50,6 +54,8 @@ static void readFile(Labyrinth* labyrinth, char* labyrinthName) {
     *labyrinth = allocateLabyrinth(width, height);
     labyrinth->score = score;
     labyrinth->keyFound = keyFound;
+    labyrinth->playerRow = playerRow;
+    labyrinth->playerColumn = playerColumn;
 
     for(int i = 0; i < labyrinth->height; i++) {
         fread(labyrinth->tiles[i], sizeof(tile), labyrinth->width, file);

@@ -23,6 +23,10 @@ Labyrinth allocateLabyrinth(int width, int height) {
     Labyrinth labyrinth;
     labyrinth.width = width;
     labyrinth.height = height;
+    labyrinth.keyFound = 0;
+    labyrinth.score = 0;
+    labyrinth.playerRow = 0;
+    labyrinth.playerColumn = 1;
     labyrinth.tiles = allocateLabyrinthTiles(width, height);
     return labyrinth;
 }
@@ -39,6 +43,8 @@ void freeLabyrinth(Labyrinth* labyrinth) {
     labyrinth->width = 0;
     labyrinth->keyFound = 0;
     labyrinth->score = 0;
+    labyrinth->playerColumn = 0;
+    labyrinth->playerRow = 0;
     labyrinth->tiles = NULL;
 }
 
@@ -272,7 +278,7 @@ static void prepareLabyrinth(Labyrinth labyrinth) {
     tile** tiles = labyrinth.tiles;
 
     //place the Labyrinth's entrance
-    tiles[0][1].c = PLAYER;
+    tiles[0][1].c = EMPTY;
 
     //place the Labyrinth's exit
     tiles[labyrinth.height-1][labyrinth.width-2].c = LOCKED_DOOR;
@@ -281,7 +287,7 @@ static void prepareLabyrinth(Labyrinth labyrinth) {
         for (int j = 0; j < labyrinth.width-1; j++) {
             if (tiles[i][j].unionType == 2) {
                 tiles[i][j].unionType = 1;
-                tiles[i][j].c = ' ';
+                tiles[i][j].c = EMPTY;
             }
         }
     }
@@ -340,7 +346,6 @@ Labyrinth generateLabyrinth(int width, int height) {
     prepareLabyrinth(labyrinth);
 
     setupCollectibles(labyrinth);
-    labyrinth.keyFound = 0;
 
     setBasicScore(&labyrinth);
 

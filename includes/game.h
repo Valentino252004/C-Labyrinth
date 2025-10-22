@@ -1,11 +1,11 @@
-#include "labyrinth.h"
 #ifndef GAME_H
 #define GAME_H
+#include "labyrinth.h"
 
 
 void play(Labyrinth labyrinth);
 
-void movePlayer(Labyrinth* labyrinth, char direction, int* playerRow, int* playerColumn, char* lastWalkedOn);
+void movePlayer(Labyrinth* labyrinth, int nextR, int nextC);
 
 /** \brief allow the user to create a new labyrinth
  * 
