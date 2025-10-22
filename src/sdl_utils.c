@@ -33,3 +33,14 @@ void display_string(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, cha
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
 }
+
+void display_menu(SDL_Renderer* renderer, TTF_Font*, int selected, char** items) {
+    SDL_Color textColor = {0, 0, 0, 255};
+    SDL_Color selectedColor = {255, 0, 0, 255};
+    int width, height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    printf("Size: W: %d, H: %d\n", width, height);
+
+}

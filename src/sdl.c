@@ -12,7 +12,23 @@
 }*/
 
 
+void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, int* selectedItem){
+    char ** menu_items = malloc(4 * sizeof(char*));
+    for(int i = 0; i < 4; i++) {
+        menu_items[i] = malloc(50 * sizeof(char));
+    }
+    strcpy(menu_items[0], "Générer un nouveau labyrinthe");
+    strcpy(menu_items[1], "Charger un labyrinthe");
+    strcpy(menu_items[2], "Afficher le classement (WIP)");
+    strcpy(menu_items[3], "Quitter");
 
+    display_menu(renderer, font, *selectedItem, menu_items);
+
+    for (int i = 0; i < 4; i++) {
+        free(menu_items[i]);
+    }
+    free(menu_items);
+}
 
 void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
     int squareSize = 20;
@@ -78,13 +94,13 @@ void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
 void display_scene(SDL_Renderer* renderer, Scene scene, TTF_Font* font, Labyrinth labyrinth) {
     switch(scene.state) {
         case MENU:
-            //displayMenu();
+            display_gameMenu(renderer, font, &scene.selectedMenuItem);
             break;
         case PLAYING:
             display_maze(renderer, labyrinth, font);
             break;
         default:
-            printf("Unknown behavior sdl.c L79\n");
+            printf("Unknown behavior sdl.c display_scene\n");
     }
 }
 
@@ -97,22 +113,18 @@ void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
         case SDLK_UP:
         case SDLK_z:
             nextR -= 1;
-            printf("Flèche haut\n");
             break;
         case SDLK_DOWN:
         case SDLK_s:
             nextR += 1;
-            printf("Flèche bas\n");
             break;
         case SDLK_LEFT:
         case SDLK_q:
             nextC -= 1;
-            printf("Flèche gauche\n");
             break;
         case SDLK_RIGHT:
         case SDLK_d:
             nextC += 1;
-            printf("Flèche droite\n");
             break;
         case SDLK_ESCAPE:
             printf("Escape pressé\n");
@@ -151,7 +163,8 @@ void sdl_loop() {
 
     Scene scene;
     scene.running = 1;
-    scene.state = PLAYING;
+    scene.selectedMenuItem = 0;
+    scene.state = MENU;
 
     //Labyrinth lab = newLabyrinth();
     //  saveLabyrinth(lab);
@@ -164,7 +177,7 @@ void sdl_loop() {
     currentLabyrinth.width = 0;
     currentLabyrinth.score = 0;
     currentLabyrinth.keyFound = 0;
-    chargeLabyrinth(&currentLabyrinth);
+    //chargeLabyrinth(&currentLabyrinth);
 
     SDL_Event event;
     while(scene.running) {
