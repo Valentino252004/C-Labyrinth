@@ -1,6 +1,7 @@
+#include <stdlib.h>
 #include "menu.h"
 
-void freeMenu(Menu* menu) {
+void freeMenuItems(Menu* menu) {
     for (int i = 0; i < menu->nbItems; i++) {
         free(menu->items[i]);
     } 

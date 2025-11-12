@@ -9,7 +9,7 @@ typedef struct {
     int nbItems;
 } Menu;
 
-void freeMenu(Menu* menu);
+void freeMenuItems(Menu* menu);
 void verifyMenuSelection(Menu* menu);
 
 #endif

@@ -48,40 +48,40 @@ void freeLabyrinth(Labyrinth* labyrinth) {
     labyrinth->tiles = NULL;
 }
 
-int getLine(Labyrinth labyrinth, int identifier) {
-    int nbPerLine = labyrinth.width/2;
+int getLine(Labyrinth* labyrinth, int identifier) {
+    int nbPerLine = labyrinth->width/2;
     return (identifier/nbPerLine)*2 +1;
 }
 
-int getColumn(Labyrinth labyrinth, int identifier) {
-    int nbPerLine = labyrinth.width/2;
+int getColumn(Labyrinth* labyrinth, int identifier) {
+    int nbPerLine = labyrinth->width/2;
     return (identifier%nbPerLine)*2 +1;
 }
 
-int getIdentifier(Labyrinth labyrinth, int line, int column) {
-    int nbPerLine = labyrinth.width/2;
+int getIdentifier(Labyrinth* labyrinth, int line, int column) {
+    int nbPerLine = labyrinth->width/2;
     return (line-1)/2*nbPerLine + (column-1)/2;
 }
 
-int getValue(Labyrinth labyrinth, int line, int column) {
-    return labyrinth.tiles[line][column].nb;
+int getValue(Labyrinth* labyrinth, int line, int column) {
+    return labyrinth->tiles[line][column].nb;
 }
 
-static int preparePathGrid(Labyrinth labyrinth) {
+static int preparePathGrid(Labyrinth* labyrinth) {
     int nb = 0;
-    for (int i = 1; i <= labyrinth.height-2; i+=2) {
-        for(int j = 1; j <= labyrinth.width-2; j+=2) {
-            labyrinth.tiles[i][j].nb = nb;
-            labyrinth.tiles[i][j].unionType = 2;
+    for (int i = 1; i <= labyrinth->height-2; i+=2) {
+        for(int j = 1; j <= labyrinth->width-2; j+=2) {
+            labyrinth->tiles[i][j].nb = nb;
+            labyrinth->tiles[i][j].unionType = 2;
             nb++;
         }
     }
     return nb;
 }
 
-static void link(Labyrinth labyrinth, int originIdentifier, int destinationIdentifier) {
+static void link(Labyrinth* labyrinth, int originIdentifier, int destinationIdentifier) {
 
-    tile ** tiles = labyrinth.tiles;
+    tile ** tiles = labyrinth->tiles;
 
     int originLine = getLine(labyrinth, originIdentifier);
     int originColumn = getColumn(labyrinth, originIdentifier);
@@ -126,9 +126,9 @@ static void link(Labyrinth labyrinth, int originIdentifier, int destinationIdent
 
 }
 
-void updatePossibilities(Labyrinth labyrinth, int previousIdentifier, int checkedIdentifier, int possibilities[], int* remainingValidTiles) {
+void updatePossibilities(Labyrinth* labyrinth, int previousIdentifier, int checkedIdentifier, int possibilities[], int* remainingValidTiles) {
 
-    tile** tiles = labyrinth.tiles;
+    tile** tiles = labyrinth->tiles;
     int line = getLine(labyrinth, checkedIdentifier);
     int column = getColumn(labyrinth, checkedIdentifier);
     int tileValue = getValue(labyrinth, line, column);
@@ -148,7 +148,7 @@ void updatePossibilities(Labyrinth labyrinth, int previousIdentifier, int checke
             }
         }
     }
-    if (line+2 < labyrinth.height-1) {
+    if (line+2 < labyrinth->height-1) {
         if (tileValue != tiles[line+2][column].nb) {
             possible = 1;
         } else {
@@ -171,7 +171,7 @@ void updatePossibilities(Labyrinth labyrinth, int previousIdentifier, int checke
             }
         }
     }
-    if (column+2 < labyrinth.width-1) {
+    if (column+2 < labyrinth->width-1) {
         if (tileValue != tiles[line][column+2].nb) {
             possible = 1;
         }
@@ -205,8 +205,8 @@ void updatePossibilities(Labyrinth labyrinth, int previousIdentifier, int checke
 }
 
 
-static int chooseDirection(Labyrinth labyrinth, int originIdentifier) {
-    tile** tiles = labyrinth.tiles;
+static int chooseDirection(Labyrinth* labyrinth, int originIdentifier) {
+    tile** tiles = labyrinth->tiles;
 
     int line = getLine(labyrinth, originIdentifier);
     int column = getColumn(labyrinth, originIdentifier);
@@ -223,7 +223,7 @@ static int chooseDirection(Labyrinth labyrinth, int originIdentifier) {
             nbPossibilities++;
         }
     }
-    if (line+2 < labyrinth.height-1) {
+    if (line+2 < labyrinth->height-1) {
 
         if (originValue != tiles[line+2][column].nb) {
             //ajouter aux possibilités
@@ -240,7 +240,7 @@ static int chooseDirection(Labyrinth labyrinth, int originIdentifier) {
             nbPossibilities++;
         }
     }
-    if (column+2 < labyrinth.width-1) {
+    if (column+2 < labyrinth->width-1) {
         if (originValue != tiles[line][column+2].nb) {
             //ajouter aux possibilités
             possibleTiles[nbPossibilities][0] = line;
@@ -255,7 +255,7 @@ static int chooseDirection(Labyrinth labyrinth, int originIdentifier) {
 }
 
 
-static void createLabyrinthPaths(Labyrinth labyrinth, int nbNumber) {
+static void createLabyrinthPaths(Labyrinth* labyrinth, int nbNumber) {
     int possibilities[nbNumber];
     for (int i = 0; i < nbNumber; i++) {
         possibilities[i] = i;
@@ -273,18 +273,18 @@ static void createLabyrinthPaths(Labyrinth labyrinth, int nbNumber) {
     }
 }
 
-static void prepareLabyrinth(Labyrinth labyrinth) {
+static void prepareLabyrinth(Labyrinth* labyrinth) {
 
-    tile** tiles = labyrinth.tiles;
+    tile** tiles = labyrinth->tiles;
 
     //place the Labyrinth's entrance
     tiles[0][1].c = EMPTY;
 
     //place the Labyrinth's exit
-    tiles[labyrinth.height-1][labyrinth.width-2].c = LOCKED_DOOR;
+    tiles[labyrinth->height-1][labyrinth->width-2].c = LOCKED_DOOR;
 
-    for (int i = 0; i < labyrinth.height-1; i++) {
-        for (int j = 0; j < labyrinth.width-1; j++) {
+    for (int i = 0; i < labyrinth->height-1; i++) {
+        for (int j = 0; j < labyrinth->width-1; j++) {
             if (tiles[i][j].unionType == 2) {
                 tiles[i][j].unionType = 1;
                 tiles[i][j].c = EMPTY;
@@ -293,13 +293,13 @@ static void prepareLabyrinth(Labyrinth labyrinth) {
     }
 }
 
-static void addCollectibles(Labyrinth labyrinth, char collectible, int nbCollectible, int force) {
+static void addCollectibles(Labyrinth* labyrinth, char collectible, int nbCollectible, int force) {
     for (int i = 0; i < nbCollectible; i++) {
-        int column = rand()%(labyrinth.width-2)+1;
-        int line = rand()%(labyrinth.height-2)+1;
+        int column = rand()%(labyrinth->width-2)+1;
+        int line = rand()%(labyrinth->height-2)+1;
 
-        if (labyrinth.tiles[line][column].c == EMPTY) {
-            labyrinth.tiles[line][column].c = collectible;
+        if (labyrinth->tiles[line][column].c == EMPTY) {
+            labyrinth->tiles[line][column].c = collectible;
         }
         else if (force) {
             i--;
@@ -307,13 +307,13 @@ static void addCollectibles(Labyrinth labyrinth, char collectible, int nbCollect
     }
 }
 
-static void setupCollectibles(Labyrinth labyrinth) {
+static void setupCollectibles(Labyrinth* labyrinth) {
     addCollectibles(labyrinth, KEY, 1, 1);
     
-    int nbTraps = labyrinth.height*labyrinth.width/20;
+    int nbTraps = labyrinth->height*labyrinth->width/20;
     addCollectibles(labyrinth, TRAP, nbTraps, 0);
     
-    int nbCoins = labyrinth.height*labyrinth.width/10;
+    int nbCoins = labyrinth->height*labyrinth->width/10;
     addCollectibles(labyrinth, TREASURE, nbCoins, 0);
 }
 
@@ -339,13 +339,13 @@ Labyrinth generateLabyrinth(int width, int height) {
     Labyrinth labyrinth = allocateLabyrinth(width, height);
     
     //the amount of different tile ids that are to be parsed
-    int nbNumber = preparePathGrid(labyrinth);
+    int nbNumber = preparePathGrid(&labyrinth);
 
-    createLabyrinthPaths(labyrinth, nbNumber);
+    createLabyrinthPaths(&labyrinth, nbNumber);
 
-    prepareLabyrinth(labyrinth);
+    prepareLabyrinth(&labyrinth);
 
-    setupCollectibles(labyrinth);
+    setupCollectibles(&labyrinth);
 
     setBasicScore(&labyrinth);
 

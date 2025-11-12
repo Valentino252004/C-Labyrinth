@@ -2,7 +2,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include "sdl.h"
-#include "mazeMenu.h"
 #include "labyrinth.h"
 #include "files.h"
 #include "game.h"
@@ -12,8 +11,6 @@
 }*/
 
 void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene){
-
-    freeMenu(scene->menu);
 
     char ** menu_items = malloc(4 * sizeof(char*));
     for(int i = 0; i < 4; i++) {
@@ -29,17 +26,19 @@ void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene){
     verifyMenuSelection(scene->menu);
 
     display_menu(renderer, font, scene->menu);
+
+    freeMenuItems(scene->menu);
 }
 
-void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
+void display_maze(SDL_Renderer* renderer, Labyrinth* labyrinth, TTF_Font* font) {
     int squareSize = 20;
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    for (int row = 0; row < labyrinth.height; row++) {
-        for (int col = 0; col < labyrinth.width; col++) {
-            tile tile = labyrinth.tiles[row][col];
+    for (int row = 0; row < labyrinth->height; row++) {
+        for (int col = 0; col < labyrinth->width; col++) {
+            tile tile = labyrinth->tiles[row][col];
             
             SDL_Rect rectangle;
             rectangle.x = col * squareSize;
@@ -47,7 +46,7 @@ void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
             rectangle.w = squareSize;
             rectangle.h = squareSize;
 
-            if (row == labyrinth.playerRow && col == labyrinth.playerColumn) {
+            if (row == labyrinth->playerRow && col == labyrinth->playerColumn) {
                 SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
             } else {
                 switch(tile.c) {
@@ -67,7 +66,7 @@ void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
                         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                         break;
                     case LOCKED_DOOR:
-                        if (labyrinth.keyFound) {
+                        if (labyrinth->keyFound) {
                             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                             break;
                         }
@@ -82,24 +81,29 @@ void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
     }
 
     char * score = malloc(sizeof(char) * 25);
-    sprintf(score, "Score: %d", labyrinth.score);
+    sprintf(score, "Score: %d", labyrinth->score);
     
     SDL_Color stringColor = {255, 255, 255, 255};
 
-    display_string(renderer, font, stringColor, score, 10, (labyrinth.height+1)*squareSize);
+    display_string(renderer, font, stringColor, score, 10, (labyrinth->height+1)*squareSize);
 
     free(score);
 }
 
 
-void display_scene(SDL_Renderer* renderer, Scene scene, TTF_Font* font, Labyrinth labyrinth) {
-    switch(scene.state) {
+void display_scene(SDL_Renderer* renderer, Scene* scene, TTF_Font* font, Labyrinth* labyrinth) {
+    switch(scene->state) {
         case MAIN_MENU:
-            display_gameMenu(renderer, font, &scene);
-            break;
+            display_gameMenu(renderer, font, scene);
+            return;
+        case NEW_LABYRINTH:
+            freeLabyrinth(labyrinth);
+            *labyrinth = newLabyrinth();
+            scene->state = PLAYING;
+            return;
         case PLAYING:
             display_maze(renderer, labyrinth, font);
-            break;
+            return;
         default:
             printf("Unknown behavior sdl.c display_scene\n");
     }
@@ -158,7 +162,7 @@ void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene) {
         case SDLK_RETURN:   //basic enter keys
             switch(scene->menu->selectedMenuItem) {
                 case MAIN_MENU_NEW_LABYRINTH:
-                    printf("WIP");
+                    scene->state = NEW_LABYRINTH;
                     break;
                 case MAIN_MENU_CHARGE_LABYRINTH:
                     printf("WIP");
@@ -207,7 +211,7 @@ void sdl_loop() {
     scene.menu = &sceneMenu;
     scene.state = MAIN_MENU;
 
-    //Labyrinth lab = newLabyrinth();
+    // Labyrinth lab = newLabyrinth();
     //  saveLabyrinth(lab);
 
     Labyrinth currentLabyrinth;
@@ -229,9 +233,10 @@ void sdl_loop() {
                     break;
                 case SDL_KEYDOWN:
                     keyHandler(&scene, &event, &currentLabyrinth);
+                    break;
             }
         }
-        display_scene(renderer, scene, font, currentLabyrinth);
+        display_scene(renderer, &scene, font, &currentLabyrinth);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }

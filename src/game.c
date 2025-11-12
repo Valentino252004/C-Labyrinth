@@ -18,6 +18,7 @@ Labyrinth newLabyrinth() {
     }
 
     Labyrinth labyrinth = generateLabyrinth(width, height);
+
     return labyrinth;
 }
 

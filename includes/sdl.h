@@ -7,7 +7,7 @@
 #include "labyrinth.h"
 #include "menu.h"
 
-typedef enum state { MAIN_MENU, PLAYING } state;
+typedef enum state { MAIN_MENU, NEW_LABYRINTH, PLAYING } state;
 
 typedef struct {
     int running;
@@ -17,11 +17,11 @@ typedef struct {
 
 void sdl_loop();
 
-void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font);
+void display_maze(SDL_Renderer* renderer, Labyrinth* labyrinth, TTF_Font* font);
 
 void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene);
 
-void display_scene(SDL_Renderer* renderer, Scene scene, TTF_Font* font, Labyrinth labyrinth);
+void display_scene(SDL_Renderer* renderer, Scene* scene, TTF_Font* font, Labyrinth* labyrinth);
 
 
 // ============ SDL_UTILS ============
