@@ -11,8 +11,10 @@
     return (LABY_SCREEN_WIDTH / laby->width < SCREEN_HEIGHT / laby->height) ? (LABY_SCREEN_WIDTH / laby->width) : (SCREEN_HEIGHT / laby->height);
 }*/
 
+void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene){
 
-void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, int* selectedItem){
+    freeMenu(scene->menu);
+
     char ** menu_items = malloc(4 * sizeof(char*));
     for(int i = 0; i < 4; i++) {
         menu_items[i] = malloc(50 * sizeof(char));
@@ -22,12 +24,11 @@ void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, int* selectedItem)
     strcpy(menu_items[2], "Afficher le classement (WIP)");
     strcpy(menu_items[3], "Quitter");
 
-    display_menu(renderer, font, *selectedItem, menu_items);
+    scene->menu->items = menu_items;
+    scene->menu->nbItems = 4;
+    verifyMenuSelection(scene->menu);
 
-    for (int i = 0; i < 4; i++) {
-        free(menu_items[i]);
-    }
-    free(menu_items);
+    display_menu(renderer, font, scene->menu);
 }
 
 void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
@@ -94,7 +95,7 @@ void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
 void display_scene(SDL_Renderer* renderer, Scene scene, TTF_Font* font, Labyrinth labyrinth) {
     switch(scene.state) {
         case MENU:
-            display_gameMenu(renderer, font, &scene.selectedMenuItem);
+            display_gameMenu(renderer, font, &scene);
             break;
         case PLAYING:
             display_maze(renderer, labyrinth, font);
@@ -143,11 +144,27 @@ void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
 
 }
 
-void keyHandler(Scene scene, SDL_Event* event, Labyrinth* labyrinth) {
+void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene) {
+    switch(keypressed) {
+        case SDLK_DOWN:
+        case SDLK_s:
+            scene->menu->selectedMenuItem++;
+            break;
+        case SDLK_UP:
+        case SDLK_z:
+            scene->menu->selectedMenuItem--;
+            break;
+    }
+}
+
+void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
     SDL_Keycode keyPressed = event->key.keysym.sym;
-    switch(scene.state) {
+    switch(scene->state) {
         case PLAYING:
             keyHandlerPlaying(keyPressed, labyrinth);
+            break;
+        case MENU:
+            keyHandlerMenu(keyPressed, scene);
             break;
     }
 }
@@ -163,7 +180,10 @@ void sdl_loop() {
 
     Scene scene;
     scene.running = 1;
-    scene.selectedMenuItem = 0;
+    Menu sceneMenu;
+    sceneMenu.selectedMenuItem = 0;
+    sceneMenu.nbItems = 0;
+    scene.menu = &sceneMenu;
     scene.state = MENU;
 
     //Labyrinth lab = newLabyrinth();
@@ -187,7 +207,7 @@ void sdl_loop() {
                     scene.running = 0;
                     break;
                 case SDL_KEYDOWN:
-                    keyHandler(scene, &event, &currentLabyrinth);
+                    keyHandler(&scene, &event, &currentLabyrinth);
             }
         }
         display_scene(renderer, scene, font, currentLabyrinth);
