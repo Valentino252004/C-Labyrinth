@@ -94,7 +94,7 @@ void display_maze(SDL_Renderer* renderer, Labyrinth labyrinth, TTF_Font* font) {
 
 void display_scene(SDL_Renderer* renderer, Scene scene, TTF_Font* font, Labyrinth labyrinth) {
     switch(scene.state) {
-        case MENU:
+        case MAIN_MENU:
             display_gameMenu(renderer, font, &scene);
             break;
         case PLAYING:
@@ -154,6 +154,24 @@ void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene) {
         case SDLK_z:
             scene->menu->selectedMenuItem--;
             break;
+        case SDLK_KP_ENTER: //Numpad
+        case SDLK_RETURN:   //basic enter keys
+            switch(scene->menu->selectedMenuItem) {
+                case MAIN_MENU_NEW_LABYRINTH:
+                    printf("WIP");
+                    break;
+                case MAIN_MENU_CHARGE_LABYRINTH:
+                    printf("WIP");
+                    break;
+                case MAIN_MENU_RANKING:
+                    printf("WIP");
+                    break;
+                case MAIN_MENU_EXIT:
+                    scene->running = 0;
+                    break;
+                default:
+                    break;
+            }
     }
 }
 
@@ -163,8 +181,11 @@ void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
         case PLAYING:
             keyHandlerPlaying(keyPressed, labyrinth);
             break;
-        case MENU:
+        case MAIN_MENU:
             keyHandlerMenu(keyPressed, scene);
+            break;
+        default:
+            printf("Undefined behavior => State not handled");
             break;
     }
 }
@@ -184,7 +205,7 @@ void sdl_loop() {
     sceneMenu.selectedMenuItem = 0;
     sceneMenu.nbItems = 0;
     scene.menu = &sceneMenu;
-    scene.state = MENU;
+    scene.state = MAIN_MENU;
 
     //Labyrinth lab = newLabyrinth();
     //  saveLabyrinth(lab);

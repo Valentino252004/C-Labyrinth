@@ -7,7 +7,7 @@
 #include "labyrinth.h"
 #include "menu.h"
 
-typedef enum state { MENU, PLAYING } state;
+typedef enum state { MAIN_MENU, PLAYING } state;
 
 typedef struct {
     int running;
