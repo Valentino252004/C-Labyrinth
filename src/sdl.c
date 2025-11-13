@@ -12,19 +12,17 @@
 
 void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene){
 
-    char ** menu_items = malloc(4 * sizeof(char*));
-    for(int i = 0; i < 4; i++) {
-        menu_items[i] = malloc(50 * sizeof(char));
-    }
-    strcpy(menu_items[0], "Générer un nouveau labyrinthe");
-    strcpy(menu_items[1], "Charger un labyrinthe");
-    strcpy(menu_items[2], "Afficher le classement (WIP)");
-    strcpy(menu_items[3], "Quitter");
+    setMainMenuFields(scene->menu);
 
-    scene->menu->items = menu_items;
-    scene->menu->nbItems = 4;
-    verifyMenuSelection(scene->menu);
+    display_menu(renderer, font, scene->menu);
 
+    freeMenuItems(scene->menu);
+}
+
+void display_labyrinthCreation(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
+
+    setCreationMenuFields(scene->menu);
+    
     display_menu(renderer, font, scene->menu);
 
     freeMenuItems(scene->menu);
@@ -96,10 +94,8 @@ void display_scene(SDL_Renderer* renderer, Scene* scene, TTF_Font* font, Labyrin
         case MAIN_MENU:
             display_gameMenu(renderer, font, scene);
             return;
-        case NEW_LABYRINTH:
-            freeLabyrinth(labyrinth);
-            *labyrinth = newLabyrinth();
-            scene->state = PLAYING;
+        case LABYRINTH_CREATION:
+            display_labyrinthCreation(renderer, font, scene);
             return;
         case PLAYING:
             display_maze(renderer, labyrinth, font);
@@ -144,11 +140,9 @@ void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
 
     movePlayer(labyrinth, nextR, nextC);
 
-    
-
 }
 
-void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene) {
+void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrinth) {
     switch(keypressed) {
         case SDLK_DOWN:
         case SDLK_s:
@@ -161,8 +155,10 @@ void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene) {
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:   //basic enter keys
             switch(scene->menu->selectedMenuItem) {
-                case MAIN_MENU_NEW_LABYRINTH:
-                    scene->state = NEW_LABYRINTH;
+                case MAIN_MENU_LABYRINTH_CREATION:
+                    freeLabyrinth(labyrinth);
+                    setupMenuCreationInputs(scene->menu);
+                    scene->state = LABYRINTH_CREATION;
                     break;
                 case MAIN_MENU_CHARGE_LABYRINTH:
                     printf("WIP");
@@ -186,7 +182,7 @@ void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
             keyHandlerPlaying(keyPressed, labyrinth);
             break;
         case MAIN_MENU:
-            keyHandlerMenu(keyPressed, scene);
+            keyHandlerMenu(keyPressed, scene, labyrinth);
             break;
         default:
             printf("Undefined behavior => State not handled");
@@ -218,8 +214,8 @@ void sdl_loop() {
     currentLabyrinth.tiles = NULL;
     currentLabyrinth.height = 0;
     currentLabyrinth.width = 0;
-    currentLabyrinth.height = 0;
-    currentLabyrinth.width = 0;
+    currentLabyrinth.playerColumn = 0;
+    currentLabyrinth.playerRow = 0;
     currentLabyrinth.score = 0;
     currentLabyrinth.keyFound = 0;
     //chargeLabyrinth(&currentLabyrinth);

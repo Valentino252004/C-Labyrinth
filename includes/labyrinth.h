@@ -22,7 +22,6 @@ typedef struct {
     int playerColumn;
 } Labyrinth;
 
-
 /** \brief generates a perfect labyrinth
  * 
  * \param width The width of the labyrinth

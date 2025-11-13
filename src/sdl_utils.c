@@ -47,8 +47,12 @@ void display_menu(SDL_Renderer* renderer, TTF_Font* font, Menu* menu) {
     SDL_Rect textContainer;
     SDL_Surface* surface;
     SDL_Texture* texture;
-    int textWidth, textHeight;
+    int textWidth, textHeight, offset;
+    offset = (menu->nbItems-1)*50;
     for (int i = 0; i < menu->nbItems; i++) {
+        if (i < menu->nbInputs) {
+            //Input;
+        }
         if (i == menu->selectedMenuItem) {
             itemColor = selectedItemColor;
         }
@@ -63,7 +67,7 @@ void display_menu(SDL_Renderer* renderer, TTF_Font* font, Menu* menu) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_QueryTexture(texture, NULL, NULL, &textWidth, &textHeight);
         textContainer.x = (width - textWidth)/2; //Center of the screen minus half the width of the text container
-        textContainer.y = (height)/2 - 150 + 100*i; //Center of the screen minus a flat value + X*i pixels to place them one by one
+        textContainer.y = (height)/2 - offset + 100*i; //Center of the screen minus a flat value + X*i pixels to place them one by one
         textContainer.h = textHeight;
         textContainer.w = textWidth;
         SDL_RenderCopy(renderer, texture, NULL, &textContainer);
