@@ -37,6 +37,7 @@ void display_string(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, cha
 void display_menu(SDL_Renderer* renderer, TTF_Font* font, Menu* menu) {
     SDL_Color textColor = {255, 255, 255, 255};
     SDL_Color selectedItemColor = {255, 0, 0, 255};
+    SDL_Color testColor = {127, 0, 127, 255};
     int width, height;
 
     SDL_GetRendererOutputSize(renderer, &width, &height);
@@ -54,7 +55,11 @@ void display_menu(SDL_Renderer* renderer, TTF_Font* font, Menu* menu) {
             //Input;
         }
         if (i == menu->selectedMenuItem) {
-            itemColor = selectedItemColor;
+            if (menu->isWriting) {
+                itemColor = testColor;
+            } else {
+                itemColor = selectedItemColor;
+            }
         }
         else {
             itemColor = textColor;

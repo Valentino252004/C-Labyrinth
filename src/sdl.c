@@ -172,6 +172,7 @@ void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrinth) 
                 default:
                     break;
             }
+            break;
     }
 }
 
