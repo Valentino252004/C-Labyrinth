@@ -21,7 +21,6 @@ void display_string(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, cha
     textBox.w = surface->w;
     textBox.h = surface->h;
 
-
     SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
     if (!surface) {
         printf("Erreur création texture: %s\n", TTF_GetError());
