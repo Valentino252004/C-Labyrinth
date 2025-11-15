@@ -142,16 +142,24 @@ void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
 
 }
 
-void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrinth) {
+void keyHandlerMenuSelection(SDL_Keycode keypressed, Menu* menu) {
     switch(keypressed) {
         case SDLK_DOWN:
         case SDLK_s:
-            scene->menu->selectedMenuItem++;
+            menu->isWriting = 0;
+            menu->selectedMenuItem++;
             break;
         case SDLK_UP:
         case SDLK_z:
-            scene->menu->selectedMenuItem--;
+            menu->isWriting = 0;
+            menu->selectedMenuItem--;
             break;
+    }
+}
+
+void keyHandlerMainMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrinth) {
+    keyHandlerMenuSelection(keypressed, scene->menu);
+    switch(keypressed) {
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:   //basic enter keys
             switch(scene->menu->selectedMenuItem) {
@@ -176,6 +184,26 @@ void keyHandlerMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrinth) 
     }
 }
 
+void keyHandlerCreationMenu(SDL_Keycode keypressed, Scene* scene) {
+    keyHandlerMenuSelection(keypressed, scene->menu);
+    switch(keypressed) {
+        case SDLK_KP_ENTER: //Numpad
+        case SDLK_RETURN:
+            if (scene->menu->nbInputs > scene->menu->selectedMenuItem) {
+                scene->menu->isWriting = !scene->menu->isWriting;        
+            }
+            switch(scene->menu->selectedMenuItem) {
+                case CREATION_MENU_VALIDATE:
+                    printf("WIP Validation \n");
+                    break;
+                case CREATION_MENU_EXIT:
+                    scene->state = MAIN_MENU;
+                    break;
+            }
+            break;
+    }
+}
+
 void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
     SDL_Keycode keyPressed = event->key.keysym.sym;
     switch(scene->state) {
@@ -183,7 +211,10 @@ void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
             keyHandlerPlaying(keyPressed, labyrinth);
             break;
         case MAIN_MENU:
-            keyHandlerMenu(keyPressed, scene, labyrinth);
+            keyHandlerMainMenu(keyPressed, scene, labyrinth);
+            break;
+        case LABYRINTH_CREATION:
+            keyHandlerCreationMenu(keyPressed, scene);
             break;
         default:
             printf("Undefined behavior => State not handled");
@@ -205,6 +236,8 @@ void sdl_loop() {
     Menu sceneMenu;
     sceneMenu.selectedMenuItem = 0;
     sceneMenu.nbItems = 0;
+    sceneMenu.isWriting = 0;
+    sceneMenu.nbInputs = 0;
     scene.menu = &sceneMenu;
     scene.state = MAIN_MENU;
 
