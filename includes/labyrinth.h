@@ -11,9 +11,14 @@ typedef struct {
     int unionType;
 } tile;
 
+typedef struct {
+    char* playerName;
+    int score;
+} Score;
 
 typedef struct {
     tile** tiles;
+    Score scores[10];
     char* name;
     int height;
     int width;

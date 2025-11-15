@@ -22,8 +22,13 @@ tile** allocateLabyrinthTiles(int width, int height) {
 
 Labyrinth allocateLabyrinth(int width, int height, char* name) {
     Labyrinth labyrinth;
-    labyrinth.name = malloc(sizeof(char*) * 50);
+    labyrinth.name = malloc(sizeof(char) * 50);
     strcpy(labyrinth.name, name);
+    for (int i = 0; i < 10; i++) {
+        labyrinth.scores[i].playerName = malloc(sizeof(char) * 50);
+        strcpy(labyrinth.scores[i].playerName, "-");
+        labyrinth.scores[i].score = 0;
+    }
     labyrinth.width = width;
     labyrinth.height = height;
     labyrinth.keyFound = 0;
