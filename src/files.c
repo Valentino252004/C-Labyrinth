@@ -77,24 +77,38 @@ void chargeLabyrinth(Labyrinth* labyrinth, char* labyrinthName) {
 char** getAllLabyrinthNames(int* nbLabyrinth) {
     DIR* directory = opendir("mazes");
     struct dirent* entry;
-
-    int nbMazes = 0;
+    
     if (directory==NULL) {
         return;
     }
+
+    *nbLabyrinth = 0;
+    char** buffer = malloc(100* sizeof(char*));
     
     while((entry = readdir(directory)) != NULL) {
-
-        char filePath[128];
+        char filePath[300];
         sprintf(filePath, "%s/%s", "mazes", entry->d_name);
         struct stat fileStat;
+        stat(filePath, &fileStat);
 
-        if (S_ISDIR(fileStat.st_mode)) {
-            printf("Répertoire : %s\n", entry->d_name);
-        }
-        else {
-            printf("FileName : %s\n", entry->d_name);
+        if (!S_ISDIR(fileStat.st_mode)) { //if its not a Directory
+            size_t len = strlen(entry->d_name);
+            size_t nameLen = len-4; //on retire .cfg
+            buffer[*nbLabyrinth] = malloc(50 * sizeof(char));
+            strcpy(buffer[*nbLabyrinth], entry->d_name); 
+            buffer[*nbLabyrinth][nameLen] = '\0';
+            (*nbLabyrinth)++;
         }
     }
+
+    char** result = malloc(*nbLabyrinth * sizeof(char*));
+    for(int i = 0; i < *nbLabyrinth; i++) {
+        result[i] = malloc(50 * sizeof(char));
+        strcpy(result[i], buffer[i]);
+        free(buffer[i]);
+    }
+    free(buffer);
+
+    return result;
 }
 
