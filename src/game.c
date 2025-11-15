@@ -4,20 +4,9 @@
 #include "labyrinth.h"
 #include "game.h"
 
-Labyrinth newLabyrinth() {
-    int width = 0;
-    int height = 0;
+Labyrinth newLabyrinth(int width, int height, char* name) {
 
-    while (width%2 != 1 && height%2 != 1) {
-        printf("Vous allez générer un nouveau labyrinthe.\n");
-        printf("Indiquer la largeur du labyrinthe (impaire uniquement):");
-        scanf("%d", &width);
-        printf("\n");
-        printf("Indiquer la hauteur du labyrinthe (impaire uniquement):");
-        scanf("%d", &height);
-    }
-
-    Labyrinth labyrinth = generateLabyrinth(width, height);
+    Labyrinth labyrinth = generateLabyrinth(width, height, name);
 
     return labyrinth;
 }
@@ -53,6 +42,13 @@ void movePlayer(Labyrinth* labyrinth, int nextR, int nextC) {
     }
     labyrinth->playerColumn = nextC;
     labyrinth->playerRow = nextR;
+}
+
+int hasPlayerWon(Labyrinth* labyrinth) {
+    if (labyrinth->playerRow == labyrinth->height-1 && labyrinth->playerColumn == labyrinth->width-2) {
+        return 1;
+    }
+    return 0;
 }
 
 /*

@@ -51,7 +51,7 @@ static void readFile(Labyrinth* labyrinth, char* labyrinthName) {
     if (labyrinth != NULL) {
         freeLabyrinth(labyrinth);
     }
-    *labyrinth = allocateLabyrinth(width, height);
+    *labyrinth = allocateLabyrinth(width, height, "name");
     labyrinth->score = score;
     labyrinth->keyFound = keyFound;
     labyrinth->playerRow = playerRow;

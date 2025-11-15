@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "labyrinth.h"
 
@@ -19,8 +20,10 @@ tile** allocateLabyrinthTiles(int width, int height) {
     return tiles;
 }
 
-Labyrinth allocateLabyrinth(int width, int height) {
+Labyrinth allocateLabyrinth(int width, int height, char* name) {
     Labyrinth labyrinth;
+    labyrinth.name = malloc(sizeof(char*) * 50);
+    strcpy(labyrinth.name, name);
     labyrinth.width = width;
     labyrinth.height = height;
     labyrinth.keyFound = 0;
@@ -334,9 +337,9 @@ void showLabyrinth(Labyrinth labyrinth) {
     printf("\n");
 }
 
-Labyrinth generateLabyrinth(int width, int height) {
+Labyrinth generateLabyrinth(int width, int height, char* name) {
 
-    Labyrinth labyrinth = allocateLabyrinth(width, height);
+    Labyrinth labyrinth = allocateLabyrinth(width, height, name);
     
     //the amount of different tile ids that are to be parsed
     int nbNumber = preparePathGrid(&labyrinth);

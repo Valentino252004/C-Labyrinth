@@ -22,7 +22,7 @@ void freeInput(Input* input) {
 
 
 void freeMenuInputs(Menu* menu) {
-    if (!menu || !menu->inputs) {
+    if (!menu || !menu->inputs || menu->nbInputs == 0) {
         return;
     }
     for (int i = 0; i < menu->nbInputs; i++) {
@@ -68,9 +68,18 @@ void setupMenuCreationInputs(Menu* menu) {
     menu->inputs[0]->type = TEXT;
     menu->inputs[1]->type = NUMBER;
     menu->inputs[2]->type = NUMBER;
-    printf("%s\n", menu->inputs[0]->inputValue);
-    printf("%s\n", menu->inputs[1]->inputValue);
-    printf("%s\n", menu->inputs[2]->inputValue);
+}
+
+void setupMenuWonInputs(Menu* menu) {
+    freeMenuInputs(menu);
+    menu->nbInputs = 1;
+    menu->inputs = malloc(menu->nbInputs * sizeof(Input*));
+    for (int i = 0; i < menu->nbInputs; i++) {
+        menu->inputs[i] = malloc(sizeof(Input));
+        menu->inputs[i]->inputValue = malloc(50 * sizeof(char));
+        strcpy(menu->inputs[i]->inputValue, "");
+    }
+    menu->inputs[0]->type = TEXT;
 }
 
 void setCreationMenuFields(Menu* menu) {
@@ -84,7 +93,30 @@ void setCreationMenuFields(Menu* menu) {
     sprintf(menu_items[2], "Hauteur: %s", menu->inputs[2]->inputValue);
     strcpy(menu_items[3], "Valider");
     strcpy(menu_items[4], "Quitter");
-    
+    menu->items = menu_items;
+    verifyMenuSelection(menu);
+}
+
+void setCreatingLabyrinthMenuFields(Menu* menu) {
+    menu->nbItems = 1;
+    char ** menu_items = malloc(menu->nbItems * sizeof(char*));
+    for(int i = 0; i < menu->nbItems; i++) {
+        menu_items[i] = malloc(50 * sizeof(char));
+    }
+    strcpy(menu_items[0], "Création du labyrinthe ...");
+    menu->items = menu_items;
+    verifyMenuSelection(menu);
+}
+
+void setPlayerWonMenu(Menu* menu) {
+    menu->nbItems = 3;
+    char ** menu_items = malloc(menu->nbItems * sizeof(char*));
+    for(int i = 0; i < menu->nbItems; i++) {
+        menu_items[i] = malloc(70 * sizeof(char));
+    }
+    sprintf(menu_items[0], "Nom du joueur: %s", menu->inputs[0]->inputValue);
+    strcpy(menu_items[1], "Enregister le score");
+    strcpy(menu_items[2], "Enregistrer le Labyrinthe");
     menu->items = menu_items;
     verifyMenuSelection(menu);
 }

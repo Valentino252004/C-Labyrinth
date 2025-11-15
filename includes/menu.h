@@ -43,4 +43,8 @@ void setupMenuCreationInputs(Menu* menu);
 void setCreationMenuFields(Menu* menu);
 void freeMenuInputs(Menu* menu);
 
+void setCreatingLabyrinthMenuFields(Menu* menu);
+
+void setupMenuWonInputs(Menu* menu);
+void setPlayerWonMenu(Menu* menu);
 #endif

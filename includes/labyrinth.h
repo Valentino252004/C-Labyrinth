@@ -14,6 +14,7 @@ typedef struct {
 
 typedef struct {
     tile** tiles;
+    char* name;
     int height;
     int width;
     int keyFound;
@@ -29,7 +30,7 @@ typedef struct {
  * 
  * \return the newly generated labyrinth
  */
-Labyrinth generateLabyrinth(int width, int height);
+Labyrinth generateLabyrinth(int width, int height, char* name);
 
 /** \brief prints the given labyrinth in console
  * 
@@ -39,7 +40,7 @@ Labyrinth generateLabyrinth(int width, int height);
  */
 void showLabyrinth(Labyrinth labyrinth);
 
-Labyrinth allocateLabyrinth(int width, int height);
+Labyrinth allocateLabyrinth(int width, int height, char* name);
 
 void freeLabyrinth(Labyrinth* labyrinth);
 

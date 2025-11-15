@@ -76,5 +76,71 @@ void display_menu(SDL_Renderer* renderer, TTF_Font* font, Menu* menu) {
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
     }
+}
 
+void display_winningMenu(SDL_Renderer* renderer, TTF_Font* font, Menu* menu, Labyrinth* labyrinth) {
+    SDL_Color textColor = {255, 255, 255, 255};
+    SDL_Color selectedItemColor = {255, 0, 0, 255};
+    SDL_Color testColor = {127, 0, 127, 255};
+    int width, height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, NULL);
+
+    SDL_Color itemColor;
+    SDL_Rect textContainer;
+    SDL_Surface* surface;
+    SDL_Texture* texture;
+    int textWidth, textHeight, offset;
+    offset = (menu->nbItems)*50;
+
+    itemColor = textColor;
+
+    char* winningStr = malloc(50* sizeof(char*));
+    sprintf(winningStr, "Vous avez gagné ! Score final : %d", labyrinth->score);
+
+    surface = TTF_RenderUTF8_Blended(
+        font, winningStr, itemColor
+    );
+    
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_QueryTexture(texture, NULL, NULL, &textWidth, &textHeight);
+    textContainer.x = (width - textWidth)/2; //Center of the screen minus half the width of the text container
+    textContainer.y = (height)/2 - offset; //Center of the screen minus a flat value + X*i pixels to place them one by one
+    textContainer.h = textHeight;
+    textContainer.w = textWidth;
+    SDL_RenderCopy(renderer, texture, NULL, &textContainer);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+
+    offset -= 100;
+    for (int i = 0; i < menu->nbItems; i++) {
+        if (i == menu->selectedMenuItem) {
+            if (menu->isWriting) {
+                itemColor = testColor;
+            } else {
+                itemColor = selectedItemColor;
+            }
+        }
+        else {
+            itemColor = textColor;
+        }
+
+        surface = TTF_RenderUTF8_Blended(
+            font, menu->items[i], itemColor
+        );
+        
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_QueryTexture(texture, NULL, NULL, &textWidth, &textHeight);
+        textContainer.x = (width - textWidth)/2; //Center of the screen minus half the width of the text container
+        textContainer.y = (height)/2 - offset + 100*i; //Center of the screen minus a flat value + X*i pixels to place them one by one
+        textContainer.h = textHeight;
+        textContainer.w = textWidth;
+        SDL_RenderCopy(renderer, texture, NULL, &textContainer);
+
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+    }
 }

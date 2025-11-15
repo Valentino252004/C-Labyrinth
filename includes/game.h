@@ -10,6 +10,8 @@ void movePlayer(Labyrinth* labyrinth, int nextR, int nextC);
 /** \brief allow the user to create a new labyrinth
  * 
  */
-Labyrinth newLabyrinth();
+Labyrinth newLabyrinth(int width, int height, char* name);
+
+int hasPlayerWon(Labyrinth* labyrinth);
 
 #endif

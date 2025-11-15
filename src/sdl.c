@@ -19,7 +19,7 @@ void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene){
     freeMenuItems(scene->menu);
 }
 
-void display_labyrinthCreation(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
+void display_labyrinthCreationMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
 
     setCreationMenuFields(scene->menu);
     
@@ -28,7 +28,25 @@ void display_labyrinthCreation(SDL_Renderer* renderer, TTF_Font* font, Scene* sc
     freeMenuItems(scene->menu);
 }
 
-void display_maze(SDL_Renderer* renderer, Labyrinth* labyrinth, TTF_Font* font) {
+void display_labyrinthCreation(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
+
+    setCreatingLabyrinthMenuFields(scene->menu);
+    
+    display_menu(renderer, font, scene->menu);
+
+    freeMenuItems(scene->menu);
+}
+
+void display_playerWon(SDL_Renderer* renderer, TTF_Font* font, Scene* scene, Labyrinth* labyrinth) {
+
+    setPlayerWonMenu(scene->menu);
+    
+    display_winningMenu(renderer, font, scene->menu, labyrinth);
+
+    freeMenuItems(scene->menu);
+}
+
+void display_maze(SDL_Renderer* renderer, TTF_Font* font, Labyrinth* labyrinth) {
     int squareSize = 20;
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -95,10 +113,16 @@ void display_scene(SDL_Renderer* renderer, Scene* scene, TTF_Font* font, Labyrin
             display_gameMenu(renderer, font, scene);
             return;
         case LABYRINTH_CREATION:
+            display_labyrinthCreationMenu(renderer, font, scene);
+            return;
+        case CREATING_LABYRINTH:
             display_labyrinthCreation(renderer, font, scene);
             return;
         case PLAYING:
-            display_maze(renderer, labyrinth, font);
+            display_maze(renderer, font, labyrinth);
+            return;
+        case PLAYER_WON:
+            display_playerWon(renderer, font, scene, labyrinth);
             return;
         default:
             printf("Unknown behavior sdl.c display_scene\n");
@@ -106,7 +130,7 @@ void display_scene(SDL_Renderer* renderer, Scene* scene, TTF_Font* font, Labyrin
 }
 
 
-void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
+void keyHandlerPlaying(SDL_Keycode keyPressed, Scene* scene, Labyrinth* labyrinth) {
     //TODO Player Row and Column in labyrinth
     int nextR = labyrinth->playerRow;
     int nextC = labyrinth->playerColumn;
@@ -140,17 +164,22 @@ void keyHandlerPlaying(SDL_Keycode keyPressed, Labyrinth* labyrinth) {
 
     movePlayer(labyrinth, nextR, nextC);
 
+    if (hasPlayerWon(labyrinth)) {
+        setupMenuWonInputs(scene->menu);
+        scene->state = PLAYER_WON;
+    }
+
 }
 
 void keyHandlerMenuSelection(SDL_Keycode keypressed, Menu* menu) {
     switch(keypressed) {
-        case SDLK_DOWN:
         case SDLK_s:
+        case SDLK_DOWN:
             menu->isWriting = 0;
             menu->selectedMenuItem++;
             break;
-        case SDLK_UP:
         case SDLK_z:
+        case SDLK_UP:
             menu->isWriting = 0;
             menu->selectedMenuItem--;
             break;
@@ -183,18 +212,138 @@ void keyHandlerMainMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrin
             break;
     }
 }
+void keyHandlerTextInput(Menu* menu, SDL_Event* event) {
+    if (menu->isWriting) {
+        Input* input = menu->inputs[menu->selectedMenuItem];
+        if (input->type == TEXT) {
+            int len = strlen(input->inputValue);
+            if (len < 49) {
+                strcat(input->inputValue, event->text.text);
+            }
+        }
+        else {
+            int isNumber = 1;
+            if (!isdigit(event->text.text[0])) {
+                isNumber = 0;
+            }
+            if (isNumber) {
+                int len = strlen(input->inputValue);
+                if (len < 49) {
+                    strcat(input->inputValue, event->text.text);
+                }
+            }
+        }
+    }
+}
 
-void keyHandlerCreationMenu(SDL_Keycode keypressed, Scene* scene) {
-    keyHandlerMenuSelection(keypressed, scene->menu);
-    switch(keypressed) {
+void toggleInputWriting(Menu* menu, int action) {
+    if (action == 2) { // reverse
+        action = !menu->isWriting;
+    }
+    if (action) {
+        printf("startInput\n");
+        SDL_StartTextInput();
+        menu->isWriting = 1;
+    } else {
+        printf("stopInput\n");
+        SDL_StopTextInput();
+        menu->isWriting = 0;
+    }
+}
+
+void validateLabyrinthCreation(Scene* scene, Labyrinth* labyrinth) {
+    Menu* menu = scene->menu;
+    char* name = malloc(50* sizeof(char));
+
+    strcpy(name, menu->inputs[0]->inputValue);
+    int width = atoi(menu->inputs[1]->inputValue);
+    int height = atoi(menu->inputs[2]->inputValue);
+
+    int validInputs = 1;
+    if (strlen(name) == 0) {
+        printf("Pas bien name !\n");
+        validInputs = 0;
+    }
+    if (width < 5 || width%2 != 1) {
+        printf("Pas bien width !\n");
+        validInputs = 0;
+    }
+    if (height < 5 || height%2 != 1) {
+        printf("Pas bien height !\n");
+        validInputs = 0;
+    }
+    
+    if (validInputs) {
+        scene->state = CREATING_LABYRINTH;
+        freeLabyrinth(labyrinth);
+        *labyrinth = newLabyrinth(width, height, name);
+        scene->state = PLAYING;
+    }
+
+    free(name);
+}
+
+void keyHandlerMenuInputs(SDL_Keycode keyPressed, Scene* scene) {
+    Menu* menu = scene->menu;
+    Input* input = menu->inputs[menu->selectedMenuItem];
+    int isWritingOption; 
+    switch (keyPressed) {
+        case SDLK_s:
+            if (menu->nbInputs > menu->selectedMenuItem) {
+                if (menu->isWriting && input->type == TEXT) {
+                    break;
+                }
+            }
+            __attribute__((fallthrough));  //Shows the compiler we know we will fall thoughout the next case
+        case SDLK_DOWN:
+            isWritingOption = 0;
+            toggleInputWriting(menu, isWritingOption);
+            menu->selectedMenuItem++;
+            break;
+        case SDLK_z:
+            if (menu->nbInputs > menu->selectedMenuItem) {
+                if (menu->isWriting && input->type == TEXT) {
+                    break;
+                }
+            }
+            __attribute__((fallthrough));  //Shows the compiler we know we will fall thoughout the next case
+        case SDLK_UP:
+            isWritingOption = 0;
+            toggleInputWriting(menu, isWritingOption);
+            menu->selectedMenuItem--;
+            break;
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:
+            //Activate / deactive inputs
             if (scene->menu->nbInputs > scene->menu->selectedMenuItem) {
-                scene->menu->isWriting = !scene->menu->isWriting;        
+                toggleInputWriting(menu, 2);
             }
+            break;
+        case SDLK_BACKSPACE:
+            if (scene->menu->isWriting) {
+                Input* input = scene->menu->inputs[scene->menu->selectedMenuItem];
+                int len = strlen(input->inputValue);
+                if (len > 0) {
+                    input->inputValue[len-1] = '\0';
+                }
+            }
+            break;
+    }
+
+}
+
+void keyHandlerCreationMenu(SDL_Keycode keyPressed, Scene* scene, Labyrinth* labyrinth) {
+    Menu* menu = scene->menu;
+    Input* input = menu->inputs[menu->selectedMenuItem];
+    int isWritingOption; 
+    keyHandlerMenuInputs(keyPressed, scene);
+    switch (keyPressed) {
+        case SDLK_KP_ENTER: //Numpad
+        case SDLK_RETURN:
+            //Behavior for validation/creation exit
             switch(scene->menu->selectedMenuItem) {
                 case CREATION_MENU_VALIDATE:
-                    printf("WIP Validation \n");
+                    validateLabyrinthCreation(scene, labyrinth);
                     break;
                 case CREATION_MENU_EXIT:
                     scene->state = MAIN_MENU;
@@ -204,17 +353,25 @@ void keyHandlerCreationMenu(SDL_Keycode keypressed, Scene* scene) {
     }
 }
 
+void keyHandlerWon(SDL_KeyCode keyPressed, Scene* scene) {
+    keyHandlerMenuInputs(keyPressed, scene);
+}
+
 void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
     SDL_Keycode keyPressed = event->key.keysym.sym;
     switch(scene->state) {
-        case PLAYING:
-            keyHandlerPlaying(keyPressed, labyrinth);
-            break;
         case MAIN_MENU:
             keyHandlerMainMenu(keyPressed, scene, labyrinth);
             break;
         case LABYRINTH_CREATION:
-            keyHandlerCreationMenu(keyPressed, scene);
+            keyHandlerCreationMenu(keyPressed, scene, labyrinth);
+            break;
+        case CREATING_LABYRINTH:
+        case PLAYING:
+            keyHandlerPlaying(keyPressed, scene, labyrinth);
+            break;
+        case PLAYER_WON:
+            keyHandlerWon(keyPressed, scene);
             break;
         default:
             printf("Undefined behavior => State not handled");
@@ -246,6 +403,7 @@ void sdl_loop() {
 
     Labyrinth currentLabyrinth;
     currentLabyrinth.tiles = NULL;
+    currentLabyrinth.name = "";
     currentLabyrinth.height = 0;
     currentLabyrinth.width = 0;
     currentLabyrinth.playerColumn = 0;
@@ -263,6 +421,11 @@ void sdl_loop() {
                     break;
                 case SDL_KEYDOWN:
                     keyHandler(&scene, &event, &currentLabyrinth);
+                    break;
+                case SDL_TEXTINPUT:
+                    if (scene.menu->isWriting) {
+                        keyHandlerTextInput(scene.menu, &event);
+                    }
                     break;
             }
         }
