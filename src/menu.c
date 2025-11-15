@@ -109,14 +109,13 @@ void setCreatingLabyrinthMenuFields(Menu* menu) {
 }
 
 void setPlayerWonMenu(Menu* menu) {
-    menu->nbItems = 3;
+    menu->nbItems = 2;
     char ** menu_items = malloc(menu->nbItems * sizeof(char*));
     for(int i = 0; i < menu->nbItems; i++) {
         menu_items[i] = malloc(70 * sizeof(char));
     }
     sprintf(menu_items[0], "Nom du joueur: %s", menu->inputs[0]->inputValue);
-    strcpy(menu_items[1], "Enregister le score");
-    strcpy(menu_items[2], "Enregistrer le Labyrinthe");
+    strcpy(menu_items[1], "Enregistrer le Labyrinthe");
     menu->items = menu_items;
     verifyMenuSelection(menu);
 }

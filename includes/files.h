@@ -8,12 +8,16 @@
  * 
  * \return An error code: 0 if passed, -1 if an error has occured
  */
-void saveLabyrinth(Labyrinth labyrinth);
+void saveLabyrinth(Labyrinth* labyrinth);
 
 /** \brief Charges the Labyrinth
  * 
  * \param labyrinth The address to charge the labyrinth
  */
-void chargeLabyrinth(Labyrinth* Labyrinth);
+void chargeLabyrinth(Labyrinth* Labyrinth, char* labyrinthName);
+
+char** getAllLabyrinthNames(int* nbLabyrinth);
+int labyrinthExists(char* labyrinthName);
+void saveScore(Labyrinth* labyrinth, char* playerName);
 
 #endif

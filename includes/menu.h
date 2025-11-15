@@ -16,6 +16,11 @@ typedef enum creationMenuActions {
     CREATION_MENU_EXIT
 } creationMenuActions;
 
+typedef enum wonMenuActions { 
+    WON_MENU_NAME_INPUT, 
+    WON_MENU_SAVE_LABYRINTH
+} wonMenuActions;
+
 typedef enum inputType {
     TEXT,
     NUMBER

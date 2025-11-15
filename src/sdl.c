@@ -333,9 +333,6 @@ void keyHandlerMenuInputs(SDL_Keycode keyPressed, Scene* scene) {
 }
 
 void keyHandlerCreationMenu(SDL_Keycode keyPressed, Scene* scene, Labyrinth* labyrinth) {
-    Menu* menu = scene->menu;
-    Input* input = menu->inputs[menu->selectedMenuItem];
-    int isWritingOption; 
     keyHandlerMenuInputs(keyPressed, scene);
     switch (keyPressed) {
         case SDLK_KP_ENTER: //Numpad
@@ -353,8 +350,25 @@ void keyHandlerCreationMenu(SDL_Keycode keyPressed, Scene* scene, Labyrinth* lab
     }
 }
 
-void keyHandlerWon(SDL_KeyCode keyPressed, Scene* scene) {
+void keyHandlerWon(SDL_KeyCode keyPressed, Scene* scene, Labyrinth* labyrinth) {
     keyHandlerMenuInputs(keyPressed, scene);
+    switch(keyPressed) {
+        case SDLK_KP_ENTER: //Numpad
+        case SDLK_RETURN:
+            switch(scene->menu->selectedMenuItem) {
+                case WON_MENU_SAVE_LABYRINTH:
+                    printf("Saving Labyrinth\n");
+                    //if (!labyrinthExists(labyrinth->name)) {
+                    saveLabyrinth(labyrinth);
+                    //}
+                    //saveScore(labyrinth);
+                    scene->state = MAIN_MENU;
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
@@ -371,7 +385,7 @@ void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
             keyHandlerPlaying(keyPressed, scene, labyrinth);
             break;
         case PLAYER_WON:
-            keyHandlerWon(keyPressed, scene);
+            keyHandlerWon(keyPressed, scene, labyrinth);
             break;
         default:
             printf("Undefined behavior => State not handled");
@@ -398,8 +412,10 @@ void sdl_loop() {
     scene.menu = &sceneMenu;
     scene.state = MAIN_MENU;
 
-    // Labyrinth lab = newLabyrinth();
-    //  saveLabyrinth(lab);
+    //Labyrinth lab = newLabyrinth(5, 5, "Coucou");
+    //saveLabyrinth(&lab);
+    //chargeLabyrinth(&lab, "Coucou");
+    //printf("Nom : %s\n", lab.name);
 
     Labyrinth currentLabyrinth;
     currentLabyrinth.tiles = NULL;
