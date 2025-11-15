@@ -50,9 +50,6 @@ void display_menu(SDL_Renderer* renderer, TTF_Font* font, Menu* menu) {
     int textWidth, textHeight, offset;
     offset = (menu->nbItems-1)*50;
     for (int i = 0; i < menu->nbItems; i++) {
-        if (i < menu->nbInputs) {
-            //Input;
-        }
         if (i == menu->selectedMenuItem) {
             if (menu->isWriting) {
                 itemColor = testColor;

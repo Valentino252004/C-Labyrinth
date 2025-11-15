@@ -16,8 +16,18 @@ typedef enum creationMenuActions {
     CREATION_MENU_EXIT
 } creationMenuActions;
 
+typedef enum inputType {
+    TEXT,
+    NUMBER
+} inputType;
+
 typedef struct {
-    char** inputs;
+    char* inputValue;
+    inputType type;
+} Input;
+
+typedef struct {
+    Input** inputs;
     char** items;
     int selectedMenuItem;
     int isWriting;

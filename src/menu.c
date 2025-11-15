@@ -13,13 +13,20 @@ void freeMenuItems(Menu* menu) {
     free(menu->items);
 }
 
+void freeInput(Input* input) {
+    if (!input->inputValue) {
+        return;
+    }
+    free(input->inputValue);
+}
+
 
 void freeMenuInputs(Menu* menu) {
     if (!menu || !menu->inputs) {
         return;
     }
     for (int i = 0; i < menu->nbInputs; i++) {
-        free(menu->inputs[i]);
+        freeInput(menu->inputs[i]);
     } 
     free(menu->inputs);
 }
@@ -52,11 +59,18 @@ void setMainMenuFields(Menu* menu) {
 void setupMenuCreationInputs(Menu* menu) {
     freeMenuInputs(menu);
     menu->nbInputs = 3;
-    menu->inputs = malloc(menu->nbInputs * sizeof(char *));
+    menu->inputs = malloc(menu->nbInputs * sizeof(Input*));
     for (int i = 0; i < menu->nbInputs; i++) {
-        menu->inputs[i] = malloc(50 * sizeof(char));
-        strcpy(menu->inputs[i], "");
+        menu->inputs[i] = malloc(sizeof(Input));
+        menu->inputs[i]->inputValue = malloc(50 * sizeof(char));
+        strcpy(menu->inputs[i]->inputValue, "");
     }
+    menu->inputs[0]->type = TEXT;
+    menu->inputs[1]->type = NUMBER;
+    menu->inputs[2]->type = NUMBER;
+    printf("%s\n", menu->inputs[0]->inputValue);
+    printf("%s\n", menu->inputs[1]->inputValue);
+    printf("%s\n", menu->inputs[2]->inputValue);
 }
 
 void setCreationMenuFields(Menu* menu) {
@@ -65,12 +79,12 @@ void setCreationMenuFields(Menu* menu) {
     for(int i = 0; i < menu->nbItems; i++) {
         menu_items[i] = malloc(50 * sizeof(char));
     }
-    sprintf(menu_items[0], "Nom: %s", menu->inputs[0]);
-    sprintf(menu_items[1], "Largeur: %s", menu->inputs[1]);
-    sprintf(menu_items[2], "Hauteur: %s", menu->inputs[2]);
+    sprintf(menu_items[0], "Nom: %s", menu->inputs[0]->inputValue);
+    sprintf(menu_items[1], "Largeur: %s", menu->inputs[1]->inputValue);
+    sprintf(menu_items[2], "Hauteur: %s", menu->inputs[2]->inputValue);
     strcpy(menu_items[3], "Valider");
     strcpy(menu_items[4], "Quitter");
-
+    
     menu->items = menu_items;
     verifyMenuSelection(menu);
 }
