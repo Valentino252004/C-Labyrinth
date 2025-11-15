@@ -188,6 +188,7 @@ void keyHandlerMenuSelection(SDL_Keycode keypressed, Menu* menu) {
 
 void keyHandlerMainMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrinth) {
     keyHandlerMenuSelection(keypressed, scene->menu);
+    int nbLabyrinth;
     switch(keypressed) {
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:   //basic enter keys
@@ -198,7 +199,7 @@ void keyHandlerMainMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrin
                     scene->state = LABYRINTH_CREATION;
                     break;
                 case MAIN_MENU_CHARGE_LABYRINTH:
-                    printf("WIP");
+                    getAllLabyrinthNames(&nbLabyrinth);
                     break;
                 case MAIN_MENU_RANKING:
                     printf("WIP");

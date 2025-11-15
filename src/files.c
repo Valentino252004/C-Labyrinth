@@ -2,6 +2,7 @@
 #include "files.h"
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <stdio.h>
 
@@ -74,13 +75,26 @@ void chargeLabyrinth(Labyrinth* labyrinth, char* labyrinthName) {
 }
 
 char** getAllLabyrinthNames(int* nbLabyrinth) {
-    DIR* directory = opendir("/mazes");
+    DIR* directory = opendir("mazes");
     struct dirent* entry;
 
+    int nbMazes = 0;
     if (directory==NULL) {
-        printf("t nul\n");
         return;
     }
-    printf("t cool\n");
+    
+    while((entry = readdir(directory)) != NULL) {
+
+        char filePath[128];
+        sprintf(filePath, "%s/%s", "mazes", entry->d_name);
+        struct stat fileStat;
+
+        if (S_ISDIR(fileStat.st_mode)) {
+            printf("Répertoire : %s\n", entry->d_name);
+        }
+        else {
+            printf("FileName : %s\n", entry->d_name);
+        }
+    }
 }
 
