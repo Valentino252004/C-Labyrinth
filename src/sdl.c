@@ -26,14 +26,6 @@ void display_labyrinthCreationMenu(SDL_Renderer* renderer, TTF_Font* font, Scene
 
 }
 
-void display_labyrinthCreation(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
-
-    setCreatingLabyrinthMenuFields(scene->menu, scene->state);
-    
-    display_menu(renderer, font, scene->menu);
-
-}
-
 void display_labyrinthLoading(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
 
     setupMenuLoadingFields(scene->menu, scene->state);
@@ -118,9 +110,6 @@ void display_scene(SDL_Renderer* renderer, Scene* scene, TTF_Font* font, Labyrin
             return;
         case LABYRINTH_CREATION:
             display_labyrinthCreationMenu(renderer, font, scene);
-            return;
-        case CREATING_LABYRINTH:
-            display_labyrinthCreation(renderer, font, scene);
             return;
         case LOADING_LABYRINTH:
             display_labyrinthLoading(renderer, font, scene);
@@ -278,7 +267,6 @@ void validateLabyrinthCreation(Scene* scene, Labyrinth* labyrinth) {
     }
     
     if (validInputs) {
-        scene->state = CREATING_LABYRINTH;
         freeLabyrinth(labyrinth);
         *labyrinth = newLabyrinth(width, height, name);
         scene->state = PLAYING;
@@ -412,8 +400,6 @@ void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
             break;
         case LABYRINTH_CREATION:
             keyHandlerCreationMenu(keyPressed, scene, labyrinth);
-            break;
-        case CREATING_LABYRINTH:
             break;
         case LOADING_LABYRINTH:
             keyHandlerLoadingMenu(keyPressed, scene, labyrinth);

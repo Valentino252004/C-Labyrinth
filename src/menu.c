@@ -97,17 +97,6 @@ void setCreationMenuFields(Menu* menu, state sceneState) {
     verifyMenuSelection(menu);
 }
 
-void setCreatingLabyrinthMenuFields(Menu* menu, state sceneState) {
-    if (menu->state != sceneState) {
-        printf("allocating Items\n");
-        allocateMenuItems(menu, 1, 50, sceneState);
-    }
-    menu->nbInputs = 0;
-    strcpy(menu->items[0], "Création du labyrinthe ...");
-
-    verifyMenuSelection(menu);
-}
-
 void setPlayerWonMenuFields(Menu* menu, state sceneState) {
     if (menu->state != sceneState) {
         allocateMenuItems(menu, 2, 70, sceneState);

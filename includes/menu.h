@@ -53,7 +53,6 @@ void verifyMenuSelection(Menu* menu);
 
 void setMainMenuFields(Menu* menu, state sceneState);
 void setCreationMenuFields(Menu* menu, state sceneState);
-void setCreatingLabyrinthMenuFields(Menu* menu, state sceneState);
 void setPlayerWonMenuFields(Menu* menu, state sceneState);
 void setupMenuLoadingFields(Menu* menu, state sceneState);
 
