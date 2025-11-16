@@ -12,29 +12,34 @@
 
 void display_gameMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene){
 
-    setMainMenuFields(scene->menu);
+    setMainMenuFields(scene->menu, scene->state);
 
     display_menu(renderer, font, scene->menu);
 
-    freeMenuItems(scene->menu);
 }
 
 void display_labyrinthCreationMenu(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
 
-    setCreationMenuFields(scene->menu);
+    setCreationMenuFields(scene->menu, scene->state);
     
     display_menu(renderer, font, scene->menu);
 
-    freeMenuItems(scene->menu);
 }
 
 void display_labyrinthCreation(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
 
-    setCreatingLabyrinthMenuFields(scene->menu);
+    setCreatingLabyrinthMenuFields(scene->menu, scene->state);
     
     display_menu(renderer, font, scene->menu);
 
-    freeMenuItems(scene->menu);
+}
+
+void display_labyrinthLoading(SDL_Renderer* renderer, TTF_Font* font, Scene* scene) {
+
+    setupMenuLoadingFields(scene->menu, scene->state);
+
+    display_menu(renderer, font, scene->menu);
+
 }
 
 void display_playerWon(SDL_Renderer* renderer, TTF_Font* font, Scene* scene, Labyrinth* labyrinth) {
@@ -118,6 +123,9 @@ void display_scene(SDL_Renderer* renderer, Scene* scene, TTF_Font* font, Labyrin
         case CREATING_LABYRINTH:
             display_labyrinthCreation(renderer, font, scene);
             return;
+        case LOADING_LABYRINTH:
+            display_labyrinthLoading(renderer, font, scene);
+            break;
         case PLAYING:
             display_maze(renderer, font, labyrinth);
             return;
@@ -188,8 +196,6 @@ void keyHandlerMenuSelection(SDL_Keycode keypressed, Menu* menu) {
 
 void keyHandlerMainMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrinth) {
     keyHandlerMenuSelection(keypressed, scene->menu);
-    int nbLabyrinth;
-    char** labyrinthNames;
     switch(keypressed) {
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:   //basic enter keys
@@ -199,11 +205,9 @@ void keyHandlerMainMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrin
                     setupMenuCreationInputs(scene->menu);
                     scene->state = LABYRINTH_CREATION;
                     break;
-                case MAIN_MENU_CHARGE_LABYRINTH: 
-                    labyrinthNames = getAllLabyrinthNames(&nbLabyrinth);
-                    for (int i = 0; i < nbLabyrinth; i++) {
-                        printf("%d : %s\n", i, labyrinthNames[i]);
-                    }
+                case MAIN_MENU_LOAD_LABYRINTH: 
+                    scene->menu->selectedMenuItem = 0;
+                    scene->state = LOADING_LABYRINTH;
                     break;
                 case MAIN_MENU_RANKING:
                     printf("WIP");
@@ -288,8 +292,20 @@ void validateLabyrinthCreation(Scene* scene, Labyrinth* labyrinth) {
     free(name);
 }
 
-void keyHandlerMenuInputs(SDL_Keycode keyPressed, Scene* scene) {
-    Menu* menu = scene->menu;
+void keyHandlerMenu(SDL_Keycode keyPressed, Menu* menu) {
+    switch (keyPressed) {
+        case SDLK_s:
+        case SDLK_DOWN:
+            menu->selectedMenuItem++;
+            break;
+        case SDLK_z:
+        case SDLK_UP:
+            menu->selectedMenuItem--;
+            break;
+    }
+}
+
+void keyHandlerMenuInputs(SDL_Keycode keyPressed, Menu* menu) {
     Input* input = menu->inputs[menu->selectedMenuItem];
     int isWritingOption; 
     switch (keyPressed) {
@@ -320,13 +336,13 @@ void keyHandlerMenuInputs(SDL_Keycode keyPressed, Scene* scene) {
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:
             //Activate / deactive inputs
-            if (scene->menu->nbInputs > scene->menu->selectedMenuItem) {
+            if (menu->nbInputs > menu->selectedMenuItem) {
                 toggleInputWriting(menu, 2);
             }
             break;
         case SDLK_BACKSPACE:
-            if (scene->menu->isWriting) {
-                Input* input = scene->menu->inputs[scene->menu->selectedMenuItem];
+            if (menu->isWriting) {
+                Input* input = menu->inputs[menu->selectedMenuItem];
                 int len = strlen(input->inputValue);
                 if (len > 0) {
                     input->inputValue[len-1] = '\0';
@@ -338,7 +354,7 @@ void keyHandlerMenuInputs(SDL_Keycode keyPressed, Scene* scene) {
 }
 
 void keyHandlerCreationMenu(SDL_Keycode keyPressed, Scene* scene, Labyrinth* labyrinth) {
-    keyHandlerMenuInputs(keyPressed, scene);
+    keyHandlerMenuInputs(keyPressed, scene->menu);
     switch (keyPressed) {
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:
@@ -355,8 +371,25 @@ void keyHandlerCreationMenu(SDL_Keycode keyPressed, Scene* scene, Labyrinth* lab
     }
 }
 
+void keyHandlerLoadingMenu(SDL_KeyCode keyPressed, Scene* scene, Labyrinth* labyrinth) {
+    Menu* menu = scene->menu;
+    keyHandlerMenu(keyPressed, menu);
+    switch(keyPressed) {
+        case SDLK_KP_ENTER: //Numpad
+        case SDLK_RETURN:   //basic enter keys
+            if (menu->nbItems-1 == menu->selectedMenuItem) {
+                scene->state = MAIN_MENU;
+            } else {
+                loadLabyrinth(labyrinth, menu->items[menu->selectedMenuItem]);
+                scene->state = PLAYING;
+            }
+        default:
+            break;
+    }
+}
+
 void keyHandlerWon(SDL_KeyCode keyPressed, Scene* scene, Labyrinth* labyrinth) {
-    keyHandlerMenuInputs(keyPressed, scene);
+    keyHandlerMenuInputs(keyPressed, scene->menu);
     switch(keyPressed) {
         case SDLK_KP_ENTER: //Numpad
         case SDLK_RETURN:
@@ -386,6 +419,10 @@ void keyHandler(Scene* scene, SDL_Event* event, Labyrinth* labyrinth) {
             keyHandlerCreationMenu(keyPressed, scene, labyrinth);
             break;
         case CREATING_LABYRINTH:
+            break;
+        case LOADING_LABYRINTH:
+            keyHandlerLoadingMenu(keyPressed, scene, labyrinth);
+            break;
         case PLAYING:
             keyHandlerPlaying(keyPressed, scene, labyrinth);
             break;
@@ -414,6 +451,8 @@ void sdl_loop() {
     sceneMenu.nbItems = 0;
     sceneMenu.isWriting = 0;
     sceneMenu.nbInputs = 0;
+    sceneMenu.state = UNDEFINED;
+    sceneMenu.items = NULL;
     scene.menu = &sceneMenu;
     scene.state = MAIN_MENU;
 

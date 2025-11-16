@@ -6,8 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "labyrinth.h"
 #include "menu.h"
-
-typedef enum state { MAIN_MENU, LABYRINTH_CREATION, CREATING_LABYRINTH, PLAYING, PLAYER_WON } state;
+#include "enums.h"
 
 typedef struct {
     int running;

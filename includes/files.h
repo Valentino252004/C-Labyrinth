@@ -14,9 +14,11 @@ void saveLabyrinth(Labyrinth* labyrinth);
  * 
  * \param labyrinth The address to charge the labyrinth
  */
-void chargeLabyrinth(Labyrinth* Labyrinth, char* labyrinthName);
+void loadLabyrinth(Labyrinth* Labyrinth, char* labyrinthName);
 
 char** getAllLabyrinthNames(int* nbLabyrinth);
+void freeLabyrinthNames(char** labyrinthNames, int nbLabyrinth);
+
 int labyrinthExists(char* labyrinthName);
 void saveScore(Labyrinth* labyrinth, char* playerName);
 

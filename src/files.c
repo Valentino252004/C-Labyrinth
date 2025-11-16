@@ -31,16 +31,20 @@ void saveLabyrinth(Labyrinth* labyrinth) {
     fclose(file);
 }
 
-void chargeLabyrinth(Labyrinth* labyrinth, char* labyrinthName) {
+void loadLabyrinth(Labyrinth* labyrinth, char* labyrinthName) {
+    printf("Loading...\n");
+    printf("Name : %s\n", labyrinthName);
     char filePath[100] = "mazes/";
     strcat(filePath, labyrinthName);
     strcat(filePath, ".cfg");
+    printf("path : %s\n", filePath);
     FILE* file = fopen(filePath, "r+");
     fseek(file, 0, SEEK_SET);
     if (!file) {
-        perror("Erreur ouverture fichier en lecture");
+        perror("Erreur ouverture fichier en lecture\n");
     }
     
+    printf("File openned...\n");
 
     int height, width, score, keyFound, playerRow, playerColumn;
     char* buffer = malloc(50* sizeof(char));
@@ -52,6 +56,8 @@ void chargeLabyrinth(Labyrinth* labyrinth, char* labyrinthName) {
     fread(&playerColumn, sizeof(int), 1, file);
     fread(buffer, sizeof(char), 50, file);
     
+    printf("Basic informations retrieved ...\n");
+
     if (labyrinth != NULL) {
         freeLabyrinth(labyrinth);
     }
@@ -112,3 +118,29 @@ char** getAllLabyrinthNames(int* nbLabyrinth) {
     return result;
 }
 
+void freeLabyrinthNames(char** labyrinthNames, int nbLabyrinth) {
+    if (!labyrinthNames) {
+        return;
+    }
+    for (int i = 0; i < nbLabyrinth; i++) {
+        free(labyrinthNames[i]); 
+    }
+    free(labyrinthNames);
+}
+
+int labyrinthExists(char* labyrinthName) {
+    char** labyrinthNames;
+    int nbLabyrinth;
+    labyrinthNames = getAllLabyrinthNames(&nbLabyrinth);
+    for (int i = 0; i < nbLabyrinth; i++) {
+        if (strcmp(labyrinthNames[i], labyrinthName)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+void saveScore(Labyrinth* labyrinth, char* playerName) {
+
+}
