@@ -44,11 +44,10 @@ void display_labyrinthLoading(SDL_Renderer* renderer, TTF_Font* font, Scene* sce
 
 void display_playerWon(SDL_Renderer* renderer, TTF_Font* font, Scene* scene, Labyrinth* labyrinth) {
 
-    setPlayerWonMenu(scene->menu);
+    setPlayerWonMenuFields(scene->menu, scene->state);
     
     display_winningMenu(renderer, font, scene->menu, labyrinth);
 
-    freeMenuItems(scene->menu);
 }
 
 void display_maze(SDL_Renderer* renderer, TTF_Font* font, Labyrinth* labyrinth) {
@@ -250,11 +249,9 @@ void toggleInputWriting(Menu* menu, int action) {
         action = !menu->isWriting;
     }
     if (action) {
-        printf("startInput\n");
         SDL_StartTextInput();
         menu->isWriting = 1;
     } else {
-        printf("stopInput\n");
         SDL_StopTextInput();
         menu->isWriting = 0;
     }

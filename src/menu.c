@@ -5,16 +5,6 @@
 #include "menu.h"
 #include "sdl.h"
 
-void freeMenuItems(Menu* menu) {
-    if (!menu || !menu->items) {
-        return;
-    }
-    for (int i = 0; i < menu->nbItems; i++) {
-        free(menu->items[i]);
-    } 
-    free(menu->items);
-}
-
 void freeInput(Input* input) {
     if (!input->inputValue) {
         return;
@@ -42,6 +32,16 @@ void allocateMenuItems(Menu* menu, int nbItems, int itemSize, state newState) {
     }
     menu->items = menu_items;
     menu->state = newState;
+}
+
+void freeMenuItems(Menu* menu) {
+    if (!menu || !menu->items) {
+        return;
+    }
+    for (int i = 0; i < menu->nbItems; i++) {
+        free(menu->items[i]);
+    } 
+    free(menu->items);
 }
 
 void verifyMenuSelection(Menu* menu) {
@@ -116,15 +116,13 @@ void setCreatingLabyrinthMenuFields(Menu* menu, state sceneState) {
     verifyMenuSelection(menu);
 }
 
-void setPlayerWonMenu(Menu* menu) {
-    menu->nbItems = 2;
-    char ** menu_items = malloc(menu->nbItems * sizeof(char*));
-    for(int i = 0; i < menu->nbItems; i++) {
-        menu_items[i] = malloc(70 * sizeof(char));
+void setPlayerWonMenuFields(Menu* menu, state sceneState) {
+    if (menu->state != sceneState) {
+        allocateMenuItems(menu, 2, 70, sceneState);
+        strcpy(menu->items[1], "Enregistrer le Labyrinthe");
     }
-    sprintf(menu_items[0], "Nom du joueur: %s", menu->inputs[0]->inputValue);
-    strcpy(menu_items[1], "Enregistrer le Labyrinthe");
-    menu->items = menu_items;
+
+    sprintf(menu->items[0], "Nom du joueur: %s", menu->inputs[0]->inputValue);
     verifyMenuSelection(menu);
 }
 
