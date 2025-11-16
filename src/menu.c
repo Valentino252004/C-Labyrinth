@@ -97,18 +97,6 @@ void setCreationMenuFields(Menu* menu, state sceneState) {
     verifyMenuSelection(menu);
 }
 
-void setPlayerWonMenuFields(Menu* menu, state sceneState) {
-    if (menu->state != sceneState) {
-        allocateMenuItems(menu, 2, 70, sceneState);
-        strcpy(menu->items[1], "Enregistrer le Labyrinthe");
-        allocateMenuInputs(menu, 1, 50);
-        menu->inputs[0]->type = TEXT;
-    }
-
-    sprintf(menu->items[0], "Nom du joueur: %s", menu->inputs[0]->inputValue);
-    verifyMenuSelection(menu);
-}
-
 void setupMenuLoadingFields(Menu* menu, state sceneState) {
     if (menu->state != sceneState) {
         char** labyrinthNames;
@@ -126,5 +114,17 @@ void setupMenuLoadingFields(Menu* menu, state sceneState) {
         freeLabyrinthNames(labyrinthNames, nbLabyrinth);
     }
 
+    verifyMenuSelection(menu);
+}
+
+void setPlayerWonMenuFields(Menu* menu, state sceneState) {
+    if (menu->state != sceneState) {
+        allocateMenuItems(menu, 2, 70, sceneState);
+        strcpy(menu->items[1], "Enregistrer le Labyrinthe");
+        allocateMenuInputs(menu, 1, 50);
+        menu->inputs[0]->type = TEXT;
+    }
+
+    sprintf(menu->items[0], "Nom du joueur: %s", menu->inputs[0]->inputValue);
     verifyMenuSelection(menu);
 }
