@@ -378,7 +378,6 @@ void keyHandlerWon(SDL_KeyCode keyPressed, Scene* scene, Labyrinth* labyrinth) {
         case SDLK_RETURN:
             switch(scene->menu->selectedMenuItem) {
                 case WON_MENU_SAVE_LABYRINTH:
-                    printf("Saving Labyrinth\n");
                     //if (!labyrinthExists(labyrinth->name)) {
                     saveLabyrinth(labyrinth);
                     //}

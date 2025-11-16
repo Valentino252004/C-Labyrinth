@@ -20,15 +20,29 @@ tile** allocateLabyrinthTiles(int width, int height) {
     return tiles;
 }
 
+void setLabyrinthName(Labyrinth* labyrinth, char* name) {
+    if (labyrinth->name) {
+        printf("freing Name\n");
+        free(labyrinth->name);
+        printf("freed\n");
+    }
+    labyrinth->name = malloc(sizeof(char) * 50);
+    strcpy(labyrinth->name, name);
+}
+
+void allocateLabyrinthScores(Labyrinth* labyrinth) {
+    for (int i = 0; i < 10; i++) {
+        labyrinth->scores[i].playerName = malloc(sizeof(char) * 50);
+        strcpy(labyrinth->scores[i].playerName, "-");
+        labyrinth->scores[i].score = 0;
+    }
+}
+
 Labyrinth allocateLabyrinth(int width, int height, char* name) {
     Labyrinth labyrinth;
-    labyrinth.name = malloc(sizeof(char) * 50);
-    strcpy(labyrinth.name, name);
-    for (int i = 0; i < 10; i++) {
-        labyrinth.scores[i].playerName = malloc(sizeof(char) * 50);
-        strcpy(labyrinth.scores[i].playerName, "-");
-        labyrinth.scores[i].score = 0;
-    }
+    labyrinth.name = NULL;
+    setLabyrinthName(&labyrinth, name);
+    allocateLabyrinthScores(&labyrinth);
     labyrinth.width = width;
     labyrinth.height = height;
     labyrinth.keyFound = 0;

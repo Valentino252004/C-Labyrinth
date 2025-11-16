@@ -49,4 +49,7 @@ Labyrinth allocateLabyrinth(int width, int height, char* name);
 
 void freeLabyrinth(Labyrinth* labyrinth);
 
+void setLabyrinthName(Labyrinth* labyrinth, char* name);
+void allocateLabyrinthScores(Labyrinth* labyrinth);
+
 #endif

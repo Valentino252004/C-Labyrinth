@@ -11,6 +11,7 @@ void saveLabyrinth(Labyrinth* labyrinth) {
     strcat(filePath, labyrinth->name);
     strcat(filePath, ".cfg");
     FILE* file = fopen(filePath, "w+");
+    printf("fileOpenned\n");
 
     fwrite(&labyrinth->height, sizeof(int), 1, file);
     fwrite(&labyrinth->width, sizeof(int), 1, file);
@@ -21,6 +22,7 @@ void saveLabyrinth(Labyrinth* labyrinth) {
     fwrite(labyrinth->name, sizeof(char), 50, file);
     
     for (int i = 0; i < 10; i++) {
+        printf("savedName : %s\n", labyrinth->scores[i].playerName);
         fwrite(labyrinth->scores[i].playerName, sizeof(char), 50, file);
         fwrite(&labyrinth->scores[i].score, sizeof(int), 1, file);
     }
@@ -56,16 +58,17 @@ void loadLabyrinth(Labyrinth* labyrinth, char* labyrinthName) {
     fread(&playerColumn, sizeof(int), 1, file);
     fread(buffer, sizeof(char), 50, file);
     
-    printf("Basic informations retrieved ...\n");
-
     if (labyrinth != NULL) {
         freeLabyrinth(labyrinth);
     }
+    
+    *labyrinth = allocateLabyrinth(width, height, buffer);
+
     labyrinth->score = score;
     labyrinth->keyFound = keyFound;
     labyrinth->playerRow = playerRow;
     labyrinth->playerColumn = playerColumn;
-    strcpy(labyrinth->name, buffer);
+
 
     for (int i = 0; i < 10; i++) {
         fread(buffer, sizeof(char), 50, file);
@@ -76,6 +79,10 @@ void loadLabyrinth(Labyrinth* labyrinth, char* labyrinthName) {
     for(int i = 0; i < labyrinth->height; i++) {
         fread(labyrinth->tiles[i], sizeof(tile), labyrinth->width, file);
     }
+
+    //place user at the entrance;
+    labyrinth->playerRow = 0;
+    labyrinth->playerColumn = 1;
 
     fclose(file);
 }
