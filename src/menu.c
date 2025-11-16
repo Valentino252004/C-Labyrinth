@@ -5,22 +5,15 @@
 #include "menu.h"
 #include "sdl.h"
 
-void freeInput(Input* input) {
-    if (!input->inputValue) {
+
+void freeMenuItems(Menu* menu) {
+    if (!menu || !menu->items) {
         return;
     }
-    free(input->inputValue);
-}
-
-
-void freeMenuInputs(Menu* menu) {
-    if (!menu || !menu->inputs || menu->nbInputs == 0) {
-        return;
-    }
-    for (int i = 0; i < menu->nbInputs; i++) {
-        freeInput(menu->inputs[i]);
+    for (int i = 0; i < menu->nbItems; i++) {
+        free(menu->items[i]);
     } 
-    free(menu->inputs);
+    free(menu->items);
 }
 
 void allocateMenuItems(Menu* menu, int nbItems, int itemSize, state newState) {
@@ -34,15 +27,35 @@ void allocateMenuItems(Menu* menu, int nbItems, int itemSize, state newState) {
     menu->state = newState;
 }
 
-void freeMenuItems(Menu* menu) {
-    if (!menu || !menu->items) {
+
+void freeInput(Input* input) {
+    if (!input->inputValue) {
         return;
     }
-    for (int i = 0; i < menu->nbItems; i++) {
-        free(menu->items[i]);
-    } 
-    free(menu->items);
+    free(input->inputValue);
 }
+
+void freeMenuInputs(Menu* menu) {
+    if (!menu || !menu->inputs || menu->nbInputs == 0) {
+        return;
+    }
+    for (int i = 0; i < menu->nbInputs; i++) {
+        freeInput(menu->inputs[i]);
+    } 
+    free(menu->inputs);
+}
+
+void allocateMenuInputs(Menu* menu, int nbInputs, int inputSize) {
+    freeMenuInputs(menu);
+    menu->nbInputs = nbInputs;
+    menu->inputs = malloc(menu->nbInputs * sizeof(Input*));
+    for (int i = 0; i < menu->nbInputs; i++) {
+        menu->inputs[i] = malloc(sizeof(Input));
+        menu->inputs[i]->inputValue = malloc(inputSize * sizeof(char));
+        strcpy(menu->inputs[i]->inputValue, "");
+    }
+}
+
 
 void verifyMenuSelection(Menu* menu) {
     if (menu->selectedMenuItem < 0) {
@@ -66,37 +79,16 @@ void setMainMenuFields(Menu* menu, state sceneState) {
     verifyMenuSelection(menu);
 }
 
-void setupMenuCreationInputs(Menu* menu) {
-    freeMenuInputs(menu);
-    menu->nbInputs = 3;
-    menu->inputs = malloc(menu->nbInputs * sizeof(Input*));
-    for (int i = 0; i < menu->nbInputs; i++) {
-        menu->inputs[i] = malloc(sizeof(Input));
-        menu->inputs[i]->inputValue = malloc(50 * sizeof(char));
-        strcpy(menu->inputs[i]->inputValue, "");
-    }
-    menu->inputs[0]->type = TEXT;
-    menu->inputs[1]->type = NUMBER;
-    menu->inputs[2]->type = NUMBER;
-}
-
-void setupMenuWonInputs(Menu* menu) {
-    freeMenuInputs(menu);
-    menu->nbInputs = 1;
-    menu->inputs = malloc(menu->nbInputs * sizeof(Input*));
-    for (int i = 0; i < menu->nbInputs; i++) {
-        menu->inputs[i] = malloc(sizeof(Input));
-        menu->inputs[i]->inputValue = malloc(50 * sizeof(char));
-        strcpy(menu->inputs[i]->inputValue, "");
-    }
-    menu->inputs[0]->type = TEXT;
-}
-
 void setCreationMenuFields(Menu* menu, state sceneState) {
     if (menu->state != sceneState) {
         allocateMenuItems(menu, 5, 50, sceneState);
         strcpy(menu->items[3], "Valider");
         strcpy(menu->items[4], "Quitter");
+
+        allocateMenuInputs(menu, 3, 50);
+        menu->inputs[0]->type = TEXT;
+        menu->inputs[1]->type = NUMBER;
+        menu->inputs[2]->type = NUMBER;
     }
     sprintf(menu->items[0], "Nom: %s", menu->inputs[0]->inputValue);
     sprintf(menu->items[1], "Largeur: %s", menu->inputs[1]->inputValue);
@@ -120,12 +112,13 @@ void setPlayerWonMenuFields(Menu* menu, state sceneState) {
     if (menu->state != sceneState) {
         allocateMenuItems(menu, 2, 70, sceneState);
         strcpy(menu->items[1], "Enregistrer le Labyrinthe");
+        allocateMenuInputs(menu, 1, 50);
+        menu->inputs[0]->type = TEXT;
     }
 
     sprintf(menu->items[0], "Nom du joueur: %s", menu->inputs[0]->inputValue);
     verifyMenuSelection(menu);
 }
-
 
 void setupMenuLoadingFields(Menu* menu, state sceneState) {
     if (menu->state != sceneState) {

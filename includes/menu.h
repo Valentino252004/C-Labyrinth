@@ -42,11 +42,12 @@ typedef struct {
     int nbItems;
 } Menu;
 
-void allocateMenuItems(Menu* menu, int nbItems, int itemSize, state newState);
 void freeMenuItems(Menu* menu);
+void allocateMenuItems(Menu* menu, int nbItems, int itemSize, state newState);
 
-void freeMenuInputs(Menu* menu);
 void freeInput(Input* input);
+void freeMenuInputs(Menu* menu);
+void allocateMenuInputs(Menu* menu, int nbInputs, int inputSize);
 
 void verifyMenuSelection(Menu* menu);
 
@@ -55,9 +56,5 @@ void setCreationMenuFields(Menu* menu, state sceneState);
 void setCreatingLabyrinthMenuFields(Menu* menu, state sceneState);
 void setPlayerWonMenuFields(Menu* menu, state sceneState);
 void setupMenuLoadingFields(Menu* menu, state sceneState);
-
-void setupMenuCreationInputs(Menu* menu);
-void setupMenuWonInputs(Menu* menu);
-
 
 #endif

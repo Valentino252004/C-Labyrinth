@@ -172,7 +172,6 @@ void keyHandlerPlaying(SDL_Keycode keyPressed, Scene* scene, Labyrinth* labyrint
     movePlayer(labyrinth, nextR, nextC);
 
     if (hasPlayerWon(labyrinth)) {
-        setupMenuWonInputs(scene->menu);
         scene->state = PLAYER_WON;
     }
 
@@ -201,7 +200,6 @@ void keyHandlerMainMenu(SDL_Keycode keypressed, Scene* scene, Labyrinth* labyrin
             switch(scene->menu->selectedMenuItem) {
                 case MAIN_MENU_LABYRINTH_CREATION:
                     freeLabyrinth(labyrinth);
-                    setupMenuCreationInputs(scene->menu);
                     scene->state = LABYRINTH_CREATION;
                     break;
                 case MAIN_MENU_LOAD_LABYRINTH: 
